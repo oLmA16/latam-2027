@@ -74,6 +74,28 @@ header{
 .dossier::-webkit-scrollbar-thumb{background:#3d382f;border-radius:5px}
 .dossier::-webkit-scrollbar-track{background:#141310}
 
+.carou{position:relative;background:#cfc7b6;overflow:hidden}
+.frames{position:relative;height:205px}
+.fr{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .28s ease}
+.fr.on{opacity:1}
+.cbtn{position:absolute;top:50%;transform:translateY(-50%);width:30px;height:46px;border:none;padding:0;
+  background:rgba(20,19,15,.5);color:#fff;font-size:23px;line-height:1;cursor:pointer;z-index:4;
+  display:flex;align-items:center;justify-content:center;transition:background .15s;font-family:'Inter',sans-serif}
+.cbtn:hover{background:rgba(192,57,43,.92)}
+.cbtn.pv{left:0;border-radius:0 3px 3px 0}
+.cbtn.nx{right:0;border-radius:3px 0 0 3px}
+.cbar{position:absolute;left:0;right:0;bottom:0;z-index:3;display:flex;align-items:flex-end;
+  justify-content:space-between;gap:10px;padding:20px 34px 6px;
+  background:linear-gradient(180deg,transparent,rgba(12,11,9,.82))}
+.ccap{font-family:'Courier Prime',monospace;font-size:10.5px;letter-spacing:.3px;color:#f4eee2;
+  text-shadow:0 1px 3px rgba(0,0,0,.95);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cnum{font-family:'Courier Prime',monospace;font-size:9.5px;color:#cec5b2;white-space:nowrap;
+  text-shadow:0 1px 3px rgba(0,0,0,.95)}
+.cdots{position:absolute;top:8px;right:9px;z-index:4;display:flex;gap:4px}
+.cdots i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.5);cursor:pointer;
+  box-shadow:0 1px 3px rgba(0,0,0,.7);transition:.15s}
+.cdots i:hover{background:#fff}
+.cdots i.on{background:var(--amber);transform:scale(1.4)}
 .card{
   background:var(--paper);color:var(--ink);
   margin:14px;border-radius:2px;
@@ -682,6 +704,44 @@ ballestas:{lead:1,n:"Islas Ballestas",r:"Peru · from Paracas",lat:-13.7358,lon:
   log:["Boats leave from Paracas. No landing permitted on the islands."]}
 };
 
+const EXTRA = {
+ santiago:[["Palacio_de_La_Moneda_-_miguelreflex.jpg","La Moneda palace, city centre"],["Cerro_Santa_Lucía_desde_el_Cerro_San_Cristóbal.jpg","City view from Cerro San Cristóbal"],["CostaneraCenter2016.jpg","Costanera Center above the city"],["Barrio_Lastarria-Feria_de_antiguedades.jpg","Antiques fair in Barrio Lastarria"],["Plaza_Armas_Santiago_Chile.JPG","Plaza de Armas, historic centre"]],
+ temuco:[["Vista_Temuco.jpg","Temuco and the Araucanía plain"],["Temuco_from_Ñielol_2016.jpg","Temuco seen from Cerro Ñielol"],["Ñielol_Temuco.jpg","Forest path on Cerro Ñielol"],["Artesania_Chilena_-_Manta_Mapuche.jpg","Traditional Mapuche woven manta"],["Carahue_sector_costero_lafquenche.JPG","Lafkenche coast near Carahue"]],
+ chiloe:[["Palafitos_de_Castro.jpg","Stilt houses on the Castro waterfront"],["Castro_desde_Tentén.jpg","Castro seen from Tentén hill"],["Iglesia_de_Quinchao,_2019_(01).jpg","UNESCO wooden church at Quinchao"],["Curanto_Chilote_-_Flickr_-_Renzo_Disi.jpg","Curanto cooked in the ground"],["Quellon's_Coastline_with_Volcano_Corcovado_in_the_distance.JPG","Chiloé coast, Corcovado beyond"]],
+ puertovaras:[["Panoramica_Puerto_Varas_2023.jpg","Puerto Varas on Lake Llanquihue"],["Panorámica_desde_Puerto_Varas.jpg","Lakefront panorama from the town"],["Puerto_varas_church.jpg","The German-era church"],["Volcán_Osorno_y_lago_Llanquihue_desde_el_sector_Los_Riscos_2.jpg","Osorno over Lake Llanquihue"],["Volcano_Osorno_and_Petrohué_waterfalls.JPG","Petrohué falls below Osorno"]],
+ bariloche:[["Vista_aérea_de_Bariloche_y_la_Catedral.jpg","Bariloche and the cathedral"],["Centro_Cívico_y_Puerto_San_Carlos_en_Bariloche.jpg","Civic centre and lakeside port"],["Bariloche_circuito_chico_-_panoramio.jpg","Viewpoint on the Circuito Chico"],["Llao_Llao_Bariloche_Argentina_-_panoramio_(1).jpg","The Llao Llao peninsula"],["Mountains_and_Lake_in_Bariloche_(Unsplash).jpg","Nahuel Huapi and the Andes"]],
+ buenosaires:[["Puerto_Madero_-_Puente_de_la_mujer_(44673627614).jpg","Puente de la Mujer, Puerto Madero"],["Cementerio_de_la_Recoleta.jpg","Mausoleums in Recoleta cemetery"],["RosedalBuenosAires.JPG","El Rosedal rose garden, Palermo"],["Casa_Rosada_Buenos_Aires.JPG","Casa Rosada on Plaza de Mayo"],["Teatro_Colón,_Buenos_Aires_01.jpg","Teatro Colón"]],
+ mendoza:[["Downtown_Mendoza.jpg","Downtown Mendoza"],["Bodega_Dante_Robino,_Mendoza.jpg","Winery and vines outside the city"],["Cordillera_de_los_Andes,_Mendoza.JPG","The Andes wall behind Mendoza"],["Embalse_Potrerillos_y_dique.JPG","Potrerillos reservoir, an hour west"],["Puente_Colgante_Cacheuta.JPG","Suspension bridge at Cacheuta"]],
+ lima:[["Miraflores_2023.jpg","Miraflores above the Pacific"],["La_Costa_Verde_Lima_Peru.JPG","Costa Verde cliffs"],["Puente_de_los_Suspiros.JPG","Puente de los Suspiros, Barranco"],["Palacio_de_Gobierno,_Lima,_Perú,_2015-07-28,_DD_61.JPG","Government Palace on Plaza Mayor"],["Palacio_de_Gobierno,_Lima,_Perú,_2015-07-28,_DD_109.JPG","The historic centre"]],
+ sacredvalley:[["Urubamba_-_Valle_Sagrado_3.jpg","The Urubamba valley floor"],["Vista_Superior_de_Ollantaytambo.jpg","Ollantaytambo from above"],["Peru_-_Cusco_Sacred_Valley_&_Incan_Ruins_045_-_Moray_(7094833217).jpg","Circular Inca terraces at Moray"],["Salineras_de_Maras,_Maras,_Perú,_2015-07-30,_DD_12.JPG","The Maras salt pans"],["Pisac,_Cuzco,_Perú,_2015-07-31,_DD_100.JPG","Pisac ruins above the valley"]],
+ paracas:[["Paracas_National_Reserve._Ica,_Peru.jpg","Paracas National Reserve"],["Playa_Roja_-_Paracas_National_Reserve,_Ica.jpg","Playa Roja, the red sand beach"],["Playas_de_la_Reserva_Nacional_de_Paracas.jpg","Desert meeting the ocean"],["Reserva_Nacional_de_Paracas,_Playa_Supay,_Ica,_Perú.JPG","Playa Supay"],["Reserva_Nacional_de_Paracas,_sector_Playa_Lagunillas,_Ica,_Perú.JPG","Lagunillas bay"]],
+ valparaiso:[["Historic_Quarter_of_the_Seaport_City_of_Valparaíso_04.jpg","The UNESCO seaport quarter"],["Ascensor_Artillería.jpg","Ascensor Artillería, one of the funiculars"],["Chile_-_43-2558_-_Valparaiso_waterfront_with_funicular.jpg","Waterfront and port"],["Iglesia_San_Francisco_Barón.jpg","Hillside church on Cerro Barón"],["Cochoa_-Reñaca,_Chile.jpg","Reñaca coast, Viña del Mar"]],
+ cajonmaipo:[["Cajón_del_Maipo.jpg","The Maipo canyon"],["Laguna_Negra_y_Embalse_El_Yeso.jpg","Embalse El Yeso from the air"],["San_Jose_volcano_seen_from_across_the_maipo_river_canyon.jpg","Volcán San José across the canyon"],["Cajón_Del_Maipo,_RM,_Chile_-_panoramio_(6).jpg","Canyon scenery above the river"],["Plaza_de_San_José_de_Maipo.jpg","Village square, San José de Maipo"]],
+ islanegra:[["Playa_isla_negra,_V_region,_Chili.jpg","The beach at Isla Negra"],["Ilsanegra.jpg","Neruda's house above the surf"],["Tralca_Point_Beach_from_Peninsula_El_Quisco.jpg","Rocky coast at Punta de Tralca"],["Playa_de_Los_Corsarios,_El_Quisco.jpg","Los Corsarios beach, El Quisco"],["Chilean_vineyard_in_Andes_foothills.jpg","Casablanca-style vineyard"]],
+ pucon:[["Pucon_noviembre_2010.jpg","Pucón in summer"],["Volcan_villarica_desde_la_ciudad_de_pucon.JPG","Villarrica volcano from town"],["Pucon.JPG","The town and lakeshore"],["Ojos_del_Caburgua.jpg","Ojos del Caburgua waterfalls"],["Villarica_Volcano_(aerial_view)1.jpg","Villarrica from the air"]],
+ licanray:[["Lago_Calafquén_desde_la_Playa_Chica_de_Lican_Ray.jpg","Lake Calafquén from Playa Chica"],["Embarcadero_en_la_Playa_Chica_de_Lican_Ray.jpg","Jetty at Playa Chica"],["Puesta_de_sol_en_Licanray.JPG","Sunset over Lican Ray"],["Conaripebeach.jpg","Black sand beach at Coñaripe"],["Villarrica,_Lago_Villarrica_2019_02.jpg","Lake Villarrica shoreline"]],
+ conguillio:[["Looking_out_over_Lago_Conguillio.jpg","Looking over Lago Conguillío"],["Volcán_Llaima_y_Laguna_Conguillío,_desde_Sierra_Nevada.jpg","Llaima above the lagoon"],["Araucaria_araucana_-_Parque_Nacional_Conguillío_por_lautaroj_-_001.jpg","Araucaria forest in the park"],["Lago_Conguillio.jpg","Lake Conguillío below Sierra Nevada"],["Parque_Nacional_Conguillio_001.jpg","Park landscape"]],
+ huerquehue:[["Parque_Nacional_Heurquehue_4.jpg","Huerquehue's araucaria forest"],["ROSWO_Huerquehue1.jpg","Park landscape"],["IMG_6492_monkey_puzzle.JPG","Monkey puzzle trees"],["Parque_Nacional_Huerquehue.jpg","Tres Lagos viewpoint, Villarrica behind"],["Araucania_Lake_District.jpg","Araucanía lake district"]],
+ termas:[["Termas_Geometricas_de_Pucon.JPG","Termas Geométricas slate pools"],["Termas_San_Luis_en_Ruta_Internacional_Pucón_Curarrehue_02.JPG","Termas San Luis, Curarrehue road"],["Pasarela_Quelhue_en_Pucón.jpg","Quelhue footbridge near Pucón"],["Puente_sobre_el_lago,_Villarrica.jpg","Bridge over Lake Villarrica"]],
+ lagobudi:[["Lago_Budi,_neblina_de_la_mañana.jpg","Morning mist over Lago Budi"],["Playa_maule_(puerto_saavedra)_región_de_la_araucania.JPG","Playa Maule, Puerto Saavedra"],["Laguna_imperial_(_puerto_saavedra)_scalopa_style_..JPG","Laguna Imperial"],["Caleta_Queule.JPG","The fishing cove at Queule"],["Cisne_de_cuello_negro_-_A740080.jpg","Black-necked swan"]],
+ curacautin:[["Lonquimay_Volcano.jpg","Volcán Lonquimay under snow"],["Estación_Ferroviaria_El_Manzanar_Curacautín_04.JPG","El Manzanar railway station"],["Araucaria_araucana,_Conguillío_National_Park,_Chile.jpg","Araucaria trees nearby"],["Araucaria_en_Parque_Nacional_Conguillio.jpg","Araucaria forest"],["Araucaria_araucana_0001.JPG","Monkey puzzle tree"]],
+ valdivia:[["Feria_Fluvial_de_Valdivia.JPG","The Feria Fluvial riverside market"],["Valdivia_y_su_río.JPG","Valdivia on the river"],["Valdivia,_muelle_fluvial.JPG","The river pier"],["Castillo_de_Niebla,_batería_con_el_río_de_fondo.JPG","Niebla fort battery"],["Niebla,_Valdivia,_2019_(06).jpg","The coast at Niebla"]],
+ petrohue:[["Volcán_Osorno_y_lago_Llanquihue_desde_el_sector_Los_Riscos_2.jpg","Osorno over Lake Llanquihue"],["Volcano_Osorno_and_Petrohué_waterfalls.JPG","The falls below Osorno"],["Volcán_Osorno_y_Lago_todos_los_santos.jpg","Lago Todos los Santos"],["Petrohue_river.jpg","The Petrohué river"],["00_126_2685_Vulcano_Osorno_Chile.jpg","The Osorno cone"]],
+ frutillar:[["Osorno_volcano_in_Frutillar_Bajo,_Chile_2.jpeg","Osorno seen from Frutillar Bajo"],["Teatro_del_Lago,_sala_Espacio_Tronador,_en_Frutillar,_Chile_1.jpg","Teatro del Lago on the water"],["Frutillar_Chile_Wikivoyage_banner.jpg","The Frutillar lakefront"],["Llanquihue_-Totoral_-vista_desde_mon_Unsern_Ahnen_01.jpg","Across Lake Llanquihue"],["Ruta_Lago_Llanquihue_Parque_Nacional_Vicente_Pérez_Rosales.jpg","The lakeshore road"]],
+ huilohuilo:[["Salto_del_Huilo_Huilo.jpg","Salto Huilo Huilo"],["Salto_Huilo_Huilo_Región_de_Los_Ríos.JPG","The waterfall in Los Ríos"],["Huilo_Huilo,_Río_Fuy.jpg","Río Fuy inside the reserve"],["Hotel_Baobab,_Huilo-Huilo.JPG","The Baobab hotel"],["Huilo_Huilo_4_(banner).jpg","Valdivian rainforest"]],
+ pnchiloe:[["Abtao-Parque_Nacional_Chiloé.jpg","Chiloé National Park"],["Playa_Cucao_Parque_Nacional_Chiloé_13.jpg","Cucao beach"],["Playa_de_Cucao_-_sur.jpg","The southern stretch at Cucao"],["Monumento_Natural_Islotes_de_Puñihuil_02.jpg","The Puñihuil penguin islets"],["Mirador_Muelle_el_Caleuche_A74117020240109.jpg","El Caleuche pier viewpoint"]],
+ villalaangostura:[["PN_LOS_ARRAYANES_-_VILLA_LA_ANGOSTURA.jpg","The Arrayanes forest"],["Istmo_de_Quetrihué.JPG","Quetrihué isthmus"],["Lago_Correntoso_Playa.JPG","Beach on Lago Correntoso"],["Bahía_Brava_-_Villa_la_angostura_-_Neuquén_-_panoramio.jpg","Bahía Brava on Nahuel Huapi"],["VILLA_LA_ANGOSTURA.JPG","The village"]],
+ sietelagos:[["CAMINO_DE_LOS_SIETE_LAGOS.jpg","The Seven Lakes road"],["Playa_Lago_Espejo_-_Ruta_40_-_panoramio.jpg","Lago Espejo off Ruta 40"],["Lago_Espejo_Chico,_Neuquen,_Argentina.jpg","Lago Espejo Chico"],["Lago_Escondido_-_Bariloche.JPG","Lago Escondido"],["LAGO_LACAR.JPG","Lago Lácar at the northern end"]],
+ sanmartin:[["Lago_Lácar_en_San_Martin_de_los_Andes_Argentina.JPG","Lago Lácar at San Martín"],["SAN_MARTIN_DE_LOS_ANDES_LACAR.JPG","The lakefront and town"],["Cerro_Chapelco_Paisaje.jpg","Cerro Chapelco"],["Volcán_Lanín_y_Ruta_CH-199.jpg","Volcán Lanín from the pass road"],["CPCpanoramica2.jpg","Town panorama"]],
+ tigre:[["Arroyo_Santa_Rosa,_Delta_del_Tigre,_Buenos_Aires,_Argentina.jpg","A delta channel"],["Puerto_de_frutos.JPG","Puerto de Frutos market"],["Lancha_Colectiva_del_Delta_del_Paraná.jpg","Commuter launch on the delta"],["Club_de_Regatas_La_Marina_01.jpg","Rowing club on the river"],["J35_009_Bf_Tigre,_EG.jpg","Tigre station"]],
+ ucovalley:[["Vineyard_in_Mendoza,_Argentina.jpg","Vines under the Andes"],["Vignoble_Mendoza_Argentine.jpg","Vineyard rows"],["Wine_Cellar_in_Mendoza(GN04637).jpg","A Mendoza cellar"],["Potrerillos,_Mendoza_(2).jpg","Andes foothills"],["Aconcagua_(aerial).jpg","The high Andes from the air"]],
+ machupicchu:[["Machu_Picchu,_2023_(012).jpg","The citadel"],["Machu_Picchu,_Perú,_2015-07-30,_DD_61-64_PAN.jpg","Panorama of the site"],["MachuPicchu_TerracedFields_(pixinn.net).jpg","The terraced fields"],["Aguas_Calientes,_Cuzco,_Perú,_2015-07-30,_DD_68.jpg","Aguas Calientes, 2,040 m"],["218_View_from_Inca_Trail_to_Sun_Gate_Machu_Picchu_Peru_2486_(14977553069).jpg","From the Sun Gate trail"],["Llama_on_Machu_Picchu.jpg","Llama on the terraces"]],
+ cusco:[["Iglesia_de_la_Compañía_de_Jesús,_Plaza_de_Armas,_Cusco,_Perú,_2015-07-31,_DD_74.jpg","Plaza de Armas"],["Sacsayhuamán,_Cusco,_Perú,_2015-07-31,_DD_05.JPG","Sacsayhuamán ramparts"],["Coricancha,_Cusco,_Perú,_2015-07-31,_DD_69.JPG","Qorikancha temple"],["Lascar_Plaza_San_Blas_at_dawn_(Cuzco)_(4577529043).jpg","Plaza San Blas at dawn"],["La_piedra_de_los_doce_ángulos,_en_calle_Hatun_Rumiyoc,_Cuzco_01.jpg","The Twelve Angled Stone"]],
+ ballestas:[["Islas_Ballestas_-_panoramio_(3).jpg","The Ballestas islands"],["Islas_Ballestas_2.JPG","Sea lions on the rocks"],["Spheniscus_humboldti,_Islas_Ballestas_10.jpg","Humboldt penguins"],["Islas_Ballestas_en_la_Reserva_Nacional_de_Paracas_-_Arco_de_rocas.jpg","Rock arch"],["Candelabro_de_Paracas_01.JPG","The Paracas Candelabra"]],
+};
+Object.keys(EXTRA).forEach(k=>{ if(P[k]) P[k].f=EXTRA[k][0][0]; });
+function IMGS(id){ return EXTRA[id] || [[P[id].f, P[id].n]]; }
+
 /* ============================================================
    VERSIONS
    ============================================================ */
@@ -769,7 +829,7 @@ function pinIcon(id,num,selected){
     className:'', iconSize:[60,74], iconAnchor:[30,74],
     html:`<div class="pinwrap ${selected?'sel':''}">
       <div class="head"></div>
-      <div class="polaroid"><img src="${THUMB(p.f)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'"><div class="cap">${p.n}</div></div>
+      <div class="polaroid"><img src="${THUMB(IMGS(id)[0][0])}" alt="" loading="lazy" onerror="this.style.visibility='hidden'"><div class="cap">${p.n}</div></div>
       <div class="num">${num}</div>
     </div>`
   });
@@ -828,6 +888,65 @@ function draw(){
    ============================================================ */
 function legFor(id){ return V[cur].legs.find(l=>l.p===id); }
 
+let CAR={i:0,dead:null,items:[],root:null};
+
+function carouHTML(id){
+  const items=IMGS(id);
+  return `<div class="carou" id="carou">
+    <div class="frames">${items.map((it,i)=>
+      `<img class="fr${i===0?' on':''}" data-i="${i}" src="${IMG(it[0])}" alt="">`).join('')}</div>
+    <button class="cbtn pv" title="Previous photo (\u2190)">&#8249;</button>
+    <button class="cbtn nx" title="Next photo (\u2192)">&#8250;</button>
+    <div class="cdots"></div>
+    <div class="cbar"><span class="ccap"></span><span class="cnum"></span></div>
+  </div>`;
+}
+
+function carouAlive(){ return CAR.items.map((_,i)=>i).filter(i=>!CAR.dead.has(i)); }
+
+function carouRender(){
+  const r=CAR.root; if(!r) return;
+  const a=carouAlive();
+  if(!a.length){ r.style.display='none'; return; }
+  if(a.indexOf(CAR.i)<0) CAR.i=a[0];
+  r.querySelectorAll('.fr').forEach(im=>im.classList.toggle('on', +im.dataset.i===CAR.i));
+  const it=CAR.items[CAR.i];
+  r.querySelector('.ccap').textContent = it?it[1]:'';
+  const multi=a.length>1;
+  r.querySelector('.cnum').textContent = multi?`${a.indexOf(CAR.i)+1} / ${a.length}`:'';
+  r.querySelectorAll('.cbtn').forEach(b=>b.style.display=multi?'flex':'none');
+  const dots=r.querySelector('.cdots');
+  dots.innerHTML = multi ? a.map(i=>`<i class="${i===CAR.i?'on':''}" data-i="${i}"></i>`).join('') : '';
+  dots.querySelectorAll('i').forEach(d=>d.onclick=()=>{ CAR.i=+d.dataset.i; carouRender(); });
+}
+
+function carouGo(dir){
+  const a=carouAlive(); if(a.length<2) return;
+  let pos=a.indexOf(CAR.i); if(pos<0) pos=0;
+  CAR.i=a[(pos+dir+a.length)%a.length];
+  carouRender();
+}
+
+function carouInit(id){
+  const r=document.getElementById('carou'); if(!r) return;
+  CAR={i:0, dead:new Set(), items:IMGS(id), root:r};
+  // any image that fails to load is silently dropped from the sequence
+  r.querySelectorAll('.fr').forEach(im=>{
+    im.onerror=()=>{ CAR.dead.add(+im.dataset.i); im.remove(); carouRender(); };
+  });
+  r.querySelector('.pv').onclick=()=>carouGo(-1);
+  r.querySelector('.nx').onclick=()=>carouGo(1);
+  carouRender();
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.key!=='ArrowLeft' && e.key!=='ArrowRight') return;
+  if(document.getElementById('compare').classList.contains('show')) return;
+  if(e.target.closest && e.target.closest('#map')) return;
+  e.preventDefault();
+  carouGo(e.key==='ArrowRight'?1:-1);
+});
+
 function dossier(id){
   const p=P[id], d=document.getElementById('dossier');
   const legs=V[cur].legs.filter(l=>l.p===id);
@@ -845,7 +964,7 @@ function dossier(id){
 
   d.innerHTML=`
    <div class="card">
-     <img class="hero" src="${IMG(p.f)}" alt="${p.n}" onerror="this.style.display='none'">
+     ${carouHTML(id)}
      <div class="body">
        <div class="eyebrow">${p.r}</div>
        <h2>${p.n}</h2>
@@ -864,6 +983,7 @@ function dossier(id){
      <button class="navbtn" onclick="step(1)" ${idx>=V[cur].legs.length-1?'disabled':''}>next stop →</button>
    </div>`:`<div class="navrow"><button class="navbtn" onclick="select(V[cur].legs[0].p)">← back to the route</button></div>`}
   `;
+  carouInit(id);
   d.scrollTop=0;
 }
 
