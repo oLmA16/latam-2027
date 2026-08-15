@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>LATAM 2026/27 — Investigation Board</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Courier+Prime:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --board:#1c1b18;
+  --board2:#26241f;
+  --cork:#8a6b45;
+  --paper:#f2ece0;
+  --paper2:#e4dccb;
+  --ink:#221f1a;
+  --red:#c0392b;
+  --red2:#e0503f;
+  --amber:#d9a441;
+  --teal:#3f8f8a;
+  --muted:#8b8477;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;height:100%}
+body{
+  font-family:'Inter',system-ui,sans-serif;
+  background:
+    radial-gradient(circle at 20% 10%, rgba(255,255,255,.035), transparent 55%),
+    radial-gradient(circle at 80% 90%, rgba(255,255,255,.025), transparent 55%),
+    var(--board);
+  color:var(--paper);
+  overflow:hidden;
+}
+
+/* ---------- HEADER ---------- */
+header{
+  display:flex;align-items:center;gap:18px;
+  padding:10px 18px;
+  background:linear-gradient(180deg,#2b2822,#1e1c18);
+  border-bottom:1px solid #000;
+  box-shadow:0 4px 18px rgba(0,0,0,.6);
+  position:relative;z-index:900;
+}
+.brand{font-family:'Special Elite',cursive;font-size:19px;letter-spacing:.5px;white-space:nowrap}
+.brand small{display:block;font-family:'Courier Prime',monospace;font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase}
+.tabs{display:flex;gap:6px;flex:1;flex-wrap:wrap}
+.tab{
+  font-family:'Courier Prime',monospace;font-size:12px;font-weight:700;
+  padding:7px 13px;border:1px solid #4a453c;border-radius:3px;
+  background:#2f2b25;color:#bdb5a6;cursor:pointer;letter-spacing:.4px;
+  transition:.15s;white-space:nowrap;
+}
+.tab:hover{background:#3a352d;color:#fff}
+.tab.on{background:var(--red);border-color:var(--red2);color:#fff;box-shadow:0 0 0 1px rgba(224,80,63,.4),0 3px 12px rgba(192,57,43,.35)}
+.tab.ghost.on{background:var(--teal);border-color:#5ab5ae;box-shadow:0 0 0 1px rgba(90,181,174,.4)}
+.legend{display:flex;gap:14px;font-family:'Courier Prime',monospace;font-size:10.5px;color:var(--muted);white-space:nowrap}
+.legend i{display:inline-block;width:20px;height:0;border-top:2px dashed var(--red2);vertical-align:middle;margin-right:5px}
+.legend i.solid{border-top:3px solid var(--amber)}
+.legend i.dot{width:9px;height:9px;border:2px solid var(--teal);border-radius:50%;border-top-width:2px}
+
+/* ---------- LAYOUT ---------- */
+.wrap{display:flex;height:calc(100% - 58px)}
+#map{flex:1;background:#14130f}
+.leaflet-container{background:#14130f;font-family:'Inter',sans-serif}
+
+/* ---------- DOSSIER ---------- */
+.dossier{
+  width:420px;min-width:420px;height:100%;overflow-y:auto;
+  background:linear-gradient(180deg,#232019,#1a1815);
+  border-left:1px solid #000;box-shadow:-8px 0 24px rgba(0,0,0,.5);
+}
+.dossier::-webkit-scrollbar{width:9px}
+.dossier::-webkit-scrollbar-thumb{background:#3d382f;border-radius:5px}
+.dossier::-webkit-scrollbar-track{background:#141310}
+
+.card{
+  background:var(--paper);color:var(--ink);
+  margin:14px;border-radius:2px;
+  box-shadow:0 6px 22px rgba(0,0,0,.55);
+  position:relative;
+}
+.card::before{
+  content:"";position:absolute;top:-7px;left:50%;transform:translateX(-50%);
+  width:15px;height:15px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#ff7c6b,var(--red) 60%,#7d2318);
+  box-shadow:0 2px 5px rgba(0,0,0,.6);z-index:5;
+}
+.card .hero{width:100%;height:190px;object-fit:cover;display:block;background:#cfc7b6}
+.card .body{padding:16px 18px 20px}
+.eyebrow{font-family:'Courier Prime',monospace;font-size:10px;letter-spacing:2.2px;text-transform:uppercase;color:#96795a;margin-bottom:5px}
+.card h2{font-family:'Special Elite',cursive;font-size:24px;margin:0 0 4px;line-height:1.15}
+.sub{font-size:13px;color:#5d564a;font-style:italic;margin-bottom:12px;line-height:1.45}
+
+.stamps{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px}
+.stamp{
+  font-family:'Courier Prime',monospace;font-size:10px;font-weight:700;
+  letter-spacing:.6px;text-transform:uppercase;
+  padding:3px 8px;border:1.5px solid;border-radius:2px;
+}
+.s-date{color:#7d2318;border-color:#c8a79e;background:rgba(192,57,43,.07)}
+.s-alt{color:#8a5a12;border-color:#d9bd85;background:rgba(217,164,65,.12)}
+.s-alt.hi{color:#8f1d12;border-color:#d99a90;background:rgba(192,57,43,.13)}
+.s-baby{color:#28615d;border-color:#9dc4c1;background:rgba(63,143,138,.1)}
+.s-lead{color:#5a5449;border-color:#bdb4a2;background:rgba(0,0,0,.04)}
+
+.sec{margin-top:15px}
+.sec h3{
+  font-family:'Courier Prime',monospace;font-size:10.5px;letter-spacing:2px;
+  text-transform:uppercase;color:#8f7d63;margin:0 0 7px;
+  padding-bottom:4px;border-bottom:1px solid #d5cbb8;
+}
+.sec ul{margin:0;padding-left:17px}
+.sec li{font-size:13.2px;line-height:1.55;margin-bottom:5px}
+.sec p{font-size:13.2px;line-height:1.55;margin:0 0 8px}
+.sec li b, .sec p b{color:#000}
+.warn{background:rgba(192,57,43,.08);border-left:3px solid var(--red);padding:9px 11px;font-size:12.6px;line-height:1.5;border-radius:2px}
+.good{background:rgba(63,143,138,.1);border-left:3px solid var(--teal);padding:9px 11px;font-size:12.6px;line-height:1.5;border-radius:2px}
+
+.navrow{display:flex;gap:8px;margin:16px 14px 22px}
+.navbtn{
+  flex:1;font-family:'Courier Prime',monospace;font-size:11px;font-weight:700;
+  padding:9px;border:1px solid #4a453c;background:#2c2820;color:#c3baa9;
+  border-radius:3px;cursor:pointer;letter-spacing:.5px;
+}
+.navbtn:hover{background:#3a352d;color:#fff}
+.navbtn:disabled{opacity:.3;cursor:default}
+
+/* ---------- TIMELINE ---------- */
+.timeline{
+  position:absolute;left:0;right:420px;bottom:0;
+  background:linear-gradient(180deg,rgba(20,19,15,.0),rgba(20,19,15,.94) 30%);
+  padding:26px 16px 12px;z-index:800;pointer-events:none;
+}
+.tlbar{display:flex;height:44px;gap:2px;pointer-events:auto;box-shadow:0 4px 18px rgba(0,0,0,.6)}
+.seg{
+  position:relative;overflow:hidden;cursor:pointer;
+  background:#3a352c;border-top:3px solid #5b5346;
+  display:flex;align-items:center;justify-content:center;
+  transition:.15s;min-width:0;
+}
+.seg:hover{background:#4a443a}
+.seg.anchor{background:#6b3a2e;border-top-color:var(--red2)}
+.seg.anchor:hover{background:#7d4536}
+.seg.on{background:var(--red);border-top-color:#ff8a76}
+.seg span{
+  font-family:'Courier Prime',monospace;font-size:9.5px;font-weight:700;
+  letter-spacing:.4px;text-transform:uppercase;color:#e8e0d0;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 4px;
+}
+.seg em{position:absolute;bottom:2px;right:4px;font-size:8px;color:rgba(255,255,255,.5);font-style:normal;font-family:'Courier Prime',monospace}
+.tlends{display:flex;justify-content:space-between;font-family:'Courier Prime',monospace;font-size:10px;color:var(--muted);margin-top:5px;pointer-events:auto}
+
+/* ---------- MARKERS ---------- */
+.pinwrap{position:relative;width:60px;height:74px}
+.polaroid{
+  position:absolute;bottom:10px;left:0;width:60px;
+  background:var(--paper);padding:3px 3px 12px;border-radius:1px;
+  box-shadow:0 5px 14px rgba(0,0,0,.65);
+  transform:rotate(-3deg);transition:transform .15s, box-shadow .15s;
+}
+.polaroid img{width:100%;height:38px;object-fit:cover;display:block;background:#cfc7b6}
+.polaroid .cap{
+  font-family:'Courier Prime',monospace;font-size:6.6px;font-weight:700;
+  text-align:center;color:#3a352c;line-height:1;margin-top:3px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.pinwrap .head{
+  position:absolute;top:-3px;left:24px;width:13px;height:13px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#ff8a76,var(--red) 60%,#6d1f16);
+  box-shadow:0 2px 5px rgba(0,0,0,.7);z-index:4;
+}
+.pinwrap .num{
+  position:absolute;bottom:4px;left:-7px;width:20px;height:20px;border-radius:50%;
+  background:var(--red);color:#fff;font-family:'Courier Prime',monospace;
+  font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;
+  border:2px solid var(--paper);box-shadow:0 2px 6px rgba(0,0,0,.6);z-index:6;
+}
+.pinwrap:hover .polaroid{transform:rotate(0deg) scale(1.16);box-shadow:0 9px 22px rgba(0,0,0,.8)}
+.pinwrap.sel .polaroid{transform:rotate(0deg) scale(1.2);box-shadow:0 0 0 3px var(--amber),0 9px 24px rgba(0,0,0,.8)}
+
+.leadwrap{position:relative;width:15px;height:15px}
+.leadwrap .dot{
+  width:13px;height:13px;border-radius:50%;
+  background:rgba(63,143,138,.35);border:2px solid var(--teal);
+  box-shadow:0 2px 6px rgba(0,0,0,.6);transition:.15s;
+}
+.leadwrap:hover .dot{transform:scale(1.55);background:var(--teal)}
+.leadwrap.sel .dot{transform:scale(1.6);background:var(--amber);border-color:#ffd88a}
+
+.leaflet-tooltip.tt{
+  background:#1e1c17;border:1px solid #4a453c;color:#e8e0d0;
+  font-family:'Courier Prime',monospace;font-size:11px;font-weight:700;
+  letter-spacing:.4px;box-shadow:0 4px 12px rgba(0,0,0,.6);
+}
+.leaflet-tooltip.tt::before{border-top-color:#4a453c}
+
+/* ---------- COMPARE ---------- */
+.compare{
+  position:absolute;inset:58px 0 0 0;z-index:850;overflow-y:auto;
+  background:linear-gradient(180deg,#201e19,#151410);padding:26px 30px 60px;display:none;
+}
+.compare.show{display:block}
+.compare h1{font-family:'Special Elite',cursive;font-size:26px;margin:0 0 4px}
+.compare .lede{color:#a9a193;font-size:13.5px;max-width:820px;line-height:1.6;margin:0 0 24px}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px;max-width:1400px}
+.ccard{background:var(--paper);color:var(--ink);border-radius:2px;padding:18px 20px 22px;box-shadow:0 8px 26px rgba(0,0,0,.5);position:relative}
+.ccard::before{content:"";position:absolute;top:-7px;left:24px;width:15px;height:15px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ff7c6b,var(--red) 60%,#7d2318);box-shadow:0 2px 5px rgba(0,0,0,.6)}
+.ccard h3{font-family:'Special Elite',cursive;font-size:20px;margin:6px 0 3px}
+.ccard .tag{font-family:'Courier Prime',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#96795a}
+.ccard .one{font-size:13px;font-style:italic;color:#5d564a;margin:6px 0 13px;line-height:1.5}
+.ccard dl{margin:0;font-size:12.8px;line-height:1.5}
+.ccard dt{font-family:'Courier Prime',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#8f7d63;margin-top:11px}
+.ccard dd{margin:3px 0 0}
+.pill{display:inline-block;font-family:'Courier Prime',monospace;font-size:10px;font-weight:700;padding:2px 7px;border-radius:2px;margin:2px 3px 2px 0;border:1.5px solid}
+.pill.y{color:#28615d;border-color:#9dc4c1;background:rgba(63,143,138,.1)}
+.pill.n{color:#8f1d12;border-color:#d99a90;background:rgba(192,57,43,.1)}
+.notes{max-width:1400px;margin:30px 0 0;background:#26231d;border:1px solid #3c372e;border-radius:3px;padding:20px 24px}
+.notes h3{font-family:'Courier Prime',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--amber);margin:0 0 10px}
+.notes ul{margin:0;padding-left:18px}
+.notes li{font-size:13px;line-height:1.6;color:#c7bfb0;margin-bottom:7px}
+.notes li b{color:#fff}
+
+@media(max-width:1100px){
+  .wrap{flex-direction:column}
+  .dossier{width:100%;min-width:0;height:44%;border-left:none;border-top:1px solid #000}
+  #map{height:56%}
+  .timeline{right:0}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">LATAM 2026 / 27<small>Case file · Berlin → Temuco → home</small></div>
+  <div class="tabs">
+    <button class="tab on" data-v="v1">A · The Grand Loop</button>
+    <button class="tab" data-v="v2">B · Right Season</button>
+    <button class="tab" data-v="v3">C · Sea Level &amp; Slow</button>
+    <button class="tab ghost" id="leadsBtn">◦ Show all leads</button>
+    <button class="tab" id="cmpBtn">⇄ Compare</button>
+  </div>
+  <div class="legend">
+    <span><i></i>flight</span>
+    <span><i class="solid"></i>road / ferry</span>
+    <span><i class="dot"></i>optional lead</span>
+  </div>
+</header>
+
+<div class="wrap">
+  <div id="map"></div>
+  <div class="dossier" id="dossier"></div>
+</div>
+
+<div class="timeline" id="timeline">
+  <div class="tlbar" id="tlbar"></div>
+  <div class="tlends"><span id="tlA">5 Dec 2026</span><span id="tlB">27 Jan 2027</span></div>
+</div>
+
+<div class="compare" id="compare"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+/* ============================================================
+   IMAGES
+   ============================================================ */
+const IMG = f => "https://commons.wikimedia.org/wiki/Special:FilePath/" + encodeURIComponent(f) + "?width=640";
+const THUMB = f => "https://commons.wikimedia.org/wiki/Special:FilePath/" + encodeURIComponent(f) + "?width=180";
+
+/* ============================================================
+   PLACES
+   ============================================================ */
+const P = {
+
+/* ---------------- CHILE — CORE ---------------- */
+santiago:{
+  n:"Santiago", r:"Chile · Región Metropolitana", lat:-33.4375, lon:-70.65, alt:570,
+  f:"Palacio_de_La_Moneda_-_miguelreflex.jpg",
+  hook:"The soft landing at both ends — friends, flat parks, and everything you need to buy before flying home.",
+  why:[
+    "Your friends are here, and it is the one place on the trip where you can do nothing at all and it still counts as a stop.",
+    "<b>January empties out.</b> Santiaguinos leave for the coast, so traffic thins, hotels soften and the city is unusually calm — the inverse of everywhere else in Chile.",
+    "Best retail in the country for the things you want to carry home: wine, copper, lapis, wool, Mapuche craft, merkén."
+  ],
+  baby:"Easy. Flat pavements, metro, pharmacies everywhere, world-class private clinics (Clínica Alemana, Las Condes). <b>Heat is the only real issue</b> — January averages 29–30°C and can hit 35°C+. Air conditioning in the room is worth paying for. Do outdoors before 11:00 and after 18:30; sunset is ~20:50.",
+  hit:[
+    "<b>Parque Bicentenario</b> (Vitacura) — the best baby park in the city. Fully paved, huge shade, flamingo lagoon, playgrounds, cafés. Free.",
+    "<b>Cerro San Cristóbal</b> — funicular from Bellavista (5–7 min, ~CLP 2,000 return, <b>under-2s free</b>, strollers allowed) or the teleférico from Providencia. Jardín Japonés near the top is shady and quiet.",
+    "<b>Barrio Italia</b> midweek — restored houses turned into design shops and courtyard cafés, several with indoor play corners. Rammed at weekends.",
+    "<b>Parque Forestal + Lastarria</b> for a flat pram walk into the best café strip.",
+    "<b>MIM</b> (Museo Interactivo Mirador) — air-conditioned, indoor, works on a 35°C afternoon."
+  ],
+  skip:"Cerro Santa Lucía with a pram (all steps — carrier only). Embalse El Yeso as a day trip: 8–12 hours door to door with 40 km of washboard gravel at the end.",
+  log:[
+    "<b>Where to stay:</b> Providencia (leafy, flat, metro Line 1) or Ñuñoa (quieter, genuinely family-oriented). Lastarria if you want to walk to dinner.",
+    "<b>SCL → ZCO Temuco:</b> 1h26 nonstop. LATAM ~44 flights/wk, Sky and JetSMART fewer. JetSMART from ~CLP 19,000 on promo, ~CLP 59,000 average; LATAM ~CLP 79,000. <b>Book 30+ days out — December sells out.</b>",
+    "<b>25 Dec and 1 Jan: the city is shut.</b> 24 Dec supermarkets close ~18:00. Stock the fridge."
+  ],
+  day:["valparaiso","cajonmaipo","islanegra"]
+},
+
+temuco:{
+  n:"Temuco", r:"Chile · Araucanía", lat:-38.7333, lon:-72.6667, alt:114, anchor:true,
+  f:"Vista_Temuco.jpg",
+  hook:"The reason for the whole trip. Family, Christmas, New Year — and the best day-trip radius in Chile.",
+  why:[
+    "This is the anchor. Everything else is built around it.",
+    "Within 2 hours you have <b>three volcanoes, four national parks, a dozen hot springs, warm lakes and an empty Pacific coast</b> — you can be out and back before the afternoon nap ends.",
+    "It is also where you should do all your shopping. Buy nappies, formula and baby food in Temuco, not in Pucón (tourist markup) and definitely not in Cucao."
+  ],
+  baby:"Ideal base. Full retail (Jumbo, Líder, Tottus, two malls), Clínica Alemana de Temuco for anything that goes wrong, and family on hand. December–February is Araucanía's dry window: 22–25°C days, 9–10°C nights. <b>Pack for cold nights even in January.</b>",
+  hit:[
+    "<b>24 December is the event</b>, not the 25th — asado, then gifts at midnight. Pan de pascua and cola de mono.",
+    "<b>New Year:</b> 12 grapes at midnight, yellow underwear, lentils. Skip the Valparaíso fireworks — a million people and no way out until 04:00.",
+    "Day trips, in rough order of effort: Lican Ray → Pucón → Termas Menetúe → Lago Budi coast → Curacautín → Conguillío.",
+    "Multi-day from here: Chiloé (6h30 with the ferry), Puerto Varas (3h15), Valdivia (2h)."
+  ],
+  skip:"Nahuelbuta National Park — 3h each way with an hour of it on dirt. Beautiful, but not from Temuco.",
+  log:[
+    "<b>Airport:</b> ZCO (La Araucanía), 20 km south toward Freire, ~25 min into town. All the majors rent here — <b>much better than driving 8h down Ruta 5 from Santiago.</b>",
+    "<b>Car seats:</b> Chilean law requires under-9s in the rear in an appropriate restraint (fines CLP 90–180k, enforced at Carabineros checkpoints on Ruta 5 in summer). Rental seats run CLP 5–10k/day, are limited in January and are the single most commonly failed reservation in Chile. <b>Bring your own — airlines carry car seats free.</b>",
+    "<b>Long daylight:</b> sunset ~21:00 and later further south. Bring a portable blackout blind or bedtime becomes a negotiation."
+  ],
+  day:["pucon","licanray","conguillio","huerquehue","termas","lagobudi","curacautin"]
+},
+
+chiloe:{
+  n:"Chiloé", r:"Chile · Los Lagos — Ancud & Castro", lat:-42.4667, lon:-73.80, alt:20,
+  f:"Castro_desde_Tentén.jpg",
+  hook:"An island that does not feel like the rest of Chile. Stilt houses, wooden churches, penguins, and rain.",
+  why:[
+    "<b>Palafitos</b> — the stilt houses over the water at Castro (Gamboa, Pedro Montt, Nercón sectors). Several are now hotels; sleeping in one is the point.",
+    "<b>16 UNESCO wooden churches</b>, built by Jesuit missionaries with shipwright techniques and no nails. Castro's yellow-and-purple San Francisco is the flagship; Nercón, Chonchi, Dalcahue and Achao are the good ones.",
+    "<b>Puñihuil</b> — the only place on earth where Humboldt and Magellanic penguins nest on the same islets. October–March, and January is when the chicks are out."
+  ],
+  baby:"Better than you would expect. Towns are small, Ancud–Castro is only 88 km, and the Cucao trails are short and mostly boardwalk. <b>The weather is the problem, not the distances</b> — Castro gets ~120 mm of rain in January and humidity around 81%. Full waterproofs for all three of you and a rain cover for the carrier are not optional.",
+  hit:[
+    "<b>Castro</b> — palafito hotels (Palafito 1326, Palafito del Mar, OCIO Territorial), the church, the Sunday feria.",
+    "<b>Ancud</b> — Fuerte San Antonio, the market, and the base for Puñihuil 27 km southwest.",
+    "<b>PN Chiloé at Cucao</b> — Sendero El Tepual and the Dunas de Cucao are short, flat and doable in a carrier.",
+    "<b>Curanto</b> — meat, shellfish and potato dumplings cooked in a pit under leaves. Eat it once."
+  ],
+  skip:"<b>Muelle de las Almas</b> — 3–4 km each way across open pasture, usually muddy, and the payoff is a wooden jetty. Not with a baby. And be realistic about the <b>Puñihuil boat</b>: small open zodiacs, 30–45 min, chop is normal, life jackets do not fit infants and many operators refuse under-2s. Assume one of you stays ashore.",
+  log:[
+    "<b>Getting there:</b> Temuco → Castro ≈ 500 km / 6h30 including the ferry. Temuco → Pargua ~5h, ferry 35–40 min (every 20–30 min, Transmarchilay / Cruz del Sur, car ~CLP 15–25k), Chacao → Ancud 35 min, Ancud → Castro 1h15.",
+    "<b>Peak January queues at Pargua can run 30–90 min</b> on weekends. Cross midweek or early.",
+    "<b>Book by September/October.</b> Chiloé in January sells out and prices double."
+  ],
+  day:["pnchiloe"]
+},
+
+puertovaras:{
+  n:"Puerto Varas", r:"Chile · Los Lagos", lat:-41.3167, lon:-72.9833, alt:65,
+  f:"Panoramica_Puerto_Varas_2023.jpg",
+  hook:"Two volcanoes reflected in a lake, German bakeries, and the best infrastructure in southern Chile.",
+  why:[
+    "Volcán Osorno and Volcán Calbuco over Lago Llanquihue — the postcard, and it genuinely delivers.",
+    "<b>The most baby-competent region in the south:</b> paved roads everywhere, real hospitals 20 min away in Puerto Montt, supermarkets, cafés with changing tables, and short driving legs between everything.",
+    "Good food and good hotels at a level you will not find again until Buenos Aires."
+  ],
+  baby:"The easiest southern base by a distance. Flat lakefront costanera for pram walks, everything within 1h, and Saltos del Petrohué is one of the most stroller-friendly attractions in the country. Days ~21°C, nights ~10°C, ~80–100 mm rain in January — clear mornings, cloudy afternoons is the usual pattern.",
+  hit:[
+    "<b>Saltos del Petrohué</b> — 55 km / 1h, short paved boardwalk loops to the falls. Parking CLP 500, entry ~CLP 10,000 foreign adult.",
+    "<b>Volcán Osorno</b> — paved road to the ski centre at 1,200 m, <b>summer chairlift</b> to ~1,420 m, café at the base.",
+    "<b>Frutillar</b> — 30 min north. Teatro del Lago on the water, the open-air German colonial museum with a working watermill, and kuchen everywhere.",
+    "<b>Lago Todos los Santos at Petrohué</b> — emerald water, boats to Peulla."
+  ],
+  skip:"Sleeping in Puerto Montt. Angelmó fish market is worth an hour (carrier, not pram — it is narrow and chaotic) but there is no reason to stay the night when Puerto Varas is 20 minutes away.",
+  log:[
+    "<b>Temuco → Puerto Varas:</b> 336 km / ~3h30 on Ruta 5. Tolls ~CLP 14,400, fuel ~CLP 35,000.",
+    "<b>⚠ Verify before booking:</b> Saltos del Petrohué was reported closing 30 July 2026 after damage to Ruta 225-CH. Check pasesparques.cl — it changes the shape of the stop.",
+    "<b>Park tickets are now online-only</b> at pasesparques.cl for most CONAF parks, with daily quotas. No walk-ins."
+  ],
+  day:["petrohue","frutillar","valdivia","huilohuilo"]
+},
+
+/* ---------------- ARGENTINA ---------------- */
+bariloche:{
+  n:"Bariloche", r:"Argentina · Río Negro / Neuquén", lat:-41.15, lon:-71.30, alt:800,
+  f:"Vista_aérea_de_Bariloche_y_la_Catedral.jpg",
+  hook:"The Argentine Lake District. Mild, dry, spectacular — and at 800 m, no altitude question at all.",
+  why:[
+    "<b>January is Bariloche's driest month</b> (~33 mm) and highs sit at a civilised 19–22°C. While Buenos Aires bakes at 33°C, this is where the baby will be most comfortable on the whole trip.",
+    "The overland crossing from the Chilean Lake District is genuinely easy: <b>Paso Cardenal Samoré is paved on both sides, only 1,314 m, and open year-round.</b>",
+    "Villa La Angostura and San Martín de los Andes are prettier and calmer than Bariloche itself."
+  ],
+  baby:"Very good — <b>with one caveat: the wind.</b> Persistent Patagonian westerlies that can drop the temperature 10°C in an hour, plus intense UV at this latitude. Warm hat, fleece and windproof for the baby even in January. No altitude concern anywhere in the region.",
+  hit:[
+    "<b>Circuito Chico</b> — a 60 km paved loop west along Av. Bustillo, endless viewpoints. The best thing here with an infant: you drive, they sleep, you stop when they wake.",
+    "<b>Cerro Campanario chairlift</b> (km 17.5) — 7 minutes to the best panorama in Patagonia. 0–4s ride free. It is an <i>open</i> chairlift, so confirm on site whether they will take a lap-held baby; there is a 30–40 min walking trail as backup.",
+    "<b>Llao Llao</b> — book afternoon tea without staying. The adjacent municipal park has short flat trails (Bosque de Arrayanes, Villa Tacul) needing no advance registration.",
+    "<b>Colonia Suiza</b> — curanto cooked underground, traditionally Sundays and Wednesdays. Book ahead.",
+    "<b>Lago Correntoso</b> at Villa La Angostura has the warmest water for paddling."
+  ],
+  skip:"Isla Victoria boat trips (5–6h, restrictive with an infant) and Cerro Tronador (long gravel road on one-way timed traffic). Cerro Catedral is redundant after Campanario.",
+  log:[
+    "<b>Osorno → Bariloche via Samoré:</b> 243 km, ~4h driving plus 30–90 min at the border. Puerto Varas → Bariloche ≈ 5–6h realistic.",
+    "<b>Chilean rental crossing the border needs a notarised permiso</b> — request 5–10 working days ahead, costs USD 90–290, some agencies only allow SUVs, and the car <b>must return to Chile</b>. For a one-way to Argentina, take the direct bus (Vía Bariloche / Andesmar) and rent locally — the driver handles the paperwork.",
+    "<b>BRC → Aeroparque:</b> 2h25. Aerolíneas ~58 flights/wk, plus JetSMART and Flybondi.",
+    "<b>January is peak.</b> Book accommodation and the car 4–6 months out."
+  ],
+  day:["villalaangostura","sietelagos","sanmartin"]
+},
+
+buenosaires:{
+  n:"Buenos Aires", r:"Argentina · CABA", lat:-34.6039, lon:-58.3814, alt:25,
+  f:"Puerto_Madero_-_Puente_de_la_mujer_(44673627614).jpg",
+  hook:"The one non-negotiable in Argentina. Better in December than January — and that is worth planning around.",
+  why:[
+    "<b>December: 29°C highs, city fully alive.</b> <b>January: 31°C+ with heavy humidity, and porteños leave</b> — restaurants and independent shops close for two weeks to a month.",
+    "If you can only shift one thing in this trip, shift Buenos Aires into December.",
+    "Steak, wine, bookshops and 400 hectares of park. Also the cheapest good food you will eat on the whole trip."
+  ],
+  baby:"Fine, if you respect the heat. Plan in three blocks: outdoors 08:00–11:30, air-conditioned 12:00–17:00, out again from 18:30. Argentines eat at 21:00–22:00 so you will dine early and nearly alone — kitchens open around 20:00. <b>Air conditioning in the room is non-negotiable in January.</b>",
+  hit:[
+    "<b>Bosques de Palermo</b> — 400 ha, flat paved paths, lakes, playgrounds. El Rosedal 10:00–18:00, closed Mondays.",
+    "<b>Recoleta Cemetery</b> — 09:00–17:00, no shade at all, go at opening. Carrier is easier than a pram in the lanes.",
+    "<b>El Ateneo Grand Splendid</b> — a 1919 theatre turned bookshop, café on the old stage. Free, 30 min, air-conditioned.",
+    "<b>MALBA</b> — compact, cool, lift, prams fine. The best hot-afternoon option in the city.",
+    "<b>Mercado de San Telmo</b> (daily, covered, air-conditioned) over the Sunday street feria, which is 10 blocks of crowd and needs a carrier."
+  ],
+  skip:"<b>Colonia del Sacramento.</b> It is a 12-hour door-to-door day with two full border processes for about four hours in a cobblestoned town. <b>Tigre is the better day trip</b> — 55 min by train, shaded boat, breeze off the delta.",
+  log:[
+    "<b>Stay in Recoleta or Palermo Botánico/Chico</b> — not Palermo Soho or Hollywood (loud until 4am), not San Telmo (cobbles, fewest supermarkets). Prioritise lift, A/C, blackout curtains and a fridge.",
+    "<b>Money:</b> the blue-dollar era is over. Official, blue and MEP now sit within 2–3% of each other, and Visa/Mastercard apply the MEP rate. <b>Use a no-FX-fee card and always choose to be charged in pesos.</b> Avoid ATMs — roughly USD 10–15 fixed fee per withdrawal with low caps.",
+    "<b>Pay hotels with a foreign card</b> — the 21% IVA on accommodation is automatically refunded to foreign tourists, but only if you pay by foreign card or foreign transfer. That is a real ~17% saving.",
+    "<b>Airports:</b> AEP is 10–15 min from Palermo; EZE is 35 km and 45–75 min. A same-day AEP↔EZE connection with a baby needs a 4h buffer — avoid it."
+  ],
+  day:["tigre"]
+},
+
+mendoza:{
+  n:"Mendoza", r:"Argentina · Cuyo", lat:-32.8897, lon:-68.8444, alt:750,
+  f:"Downtown_Mendoza.jpg",
+  hook:"65 minutes from Santiago by air. Dry heat, vine canopies and long lunches under the Andes.",
+  why:[
+    "<b>SCL–MDZ is a 1h05 flight</b> — one of the shortest international sectors anywhere, and it slots into the trip almost for free.",
+    "January is hot (33°C highs, up to 38–40°C) but it is <b>dry heat with a big day-night swing</b> — far more comfortable with a baby than Buenos Aires humidity.",
+    "Wineries with gardens, shade and proper restaurants, 20–40 minutes from town."
+  ],
+  baby:"Good, if you base outside the city. <b>Chacras de Coria</b> in Luján de Cuyo is leafy, quiet, walkable and full of family-scale posadas with pools, 20 min from the centre. Book lunch-based winery visits with outdoor tables — not seated technical tastings.",
+  hit:[
+    "<b>Bodega Cruzat</b> (Perdriel) runs an explicit family plan — sparkling wine tour for you, label-painting for the kid.",
+    "<b>Luján de Cuyo and Maipú</b> generally: 20–40 min out, gardens, shade, long lunches.",
+    "<b>Termas de Cacheuta</b>, 1h west — go to the <i>Parque de Agua</i> water park, not the hotel spa (which excludes under-15s). Check there is a cooler pool; thermal water is too hot for an infant.",
+    "<b>Potrerillos</b> reservoir, 1h on RN7 — cooler than the city, mountain views, easy lunch."
+  ],
+  skip:"<b>Valle de Uco as a day trip</b> — 1h15–2h each way on partly gravel roads, and several high-end tasting rooms do not admit under-12s. Verify winery by winery. Also skip Aconcagua park day trips and rafting.",
+  log:[
+    "<b>Do not drive the Cristo Redentor pass with the baby if you can fly it.</b> The tunnel is at 3,175 m and <b>the Argentine border post sits at ~3,200 m</b> — where you queue, potentially for 1–2 hours stationary. The Chilean side is 29 hairpins. The 1h05 flight removes the question for roughly the price of a bus ticket.",
+    "<b>Harvest is not in Dec/Jan.</b> Whites start late January, the main vendimia runs late February to April, and the festival is the first week of March. December–January is green canopy — beautiful, but no harvest activity.",
+    "<b>AEP → MDZ:</b> 1h55. <b>MDZ → SCL:</b> 1h05."
+  ],
+  day:["ucovalley"]
+},
+
+/* ---------------- PERU ---------------- */
+lima:{
+  n:"Lima", r:"Peru · sea level", lat:-12.06, lon:-77.0375, alt:161,
+  f:"Miraflores_2023.jpg",
+  hook:"January is Lima's best month — the winter fog is gone and it is the sunniest, clearest time of year.",
+  why:[
+    "<b>The garúa is a winter thing (June–September).</b> In December and January Lima is 26°C, sunny, with essentially zero rain. Everyone who told you Lima is grey visited in July.",
+    "One of the two or three best food cities in the world, at every price point — from a ceviche counter in Surquillo to Central and Maido.",
+    "Sea level, walkable, and a genuinely easy first stop after a long flight."
+  ],
+  baby:"Straightforward. Miraflores and Barranco have flat clifftop promenades built for prams, with parks the whole length. <b>Feed carefully:</b> reconstitute formula with bottled or cold boiled water only, and carry paediatric ORS — travellers' diarrhoea risk is moderate-to-high and infants dehydrate fast.",
+  hit:[
+    "<b>Malecón de Miraflores</b> — 10 km of clifftop park above the Pacific. Parque del Amor, Parque Kennedy, paragliders overhead.",
+    "<b>Barranco</b> — the Puente de los Suspiros, MATE, street art, the best bars. Quieter and prettier than Miraflores.",
+    "<b>Centro Histórico</b> — Plaza Mayor, the cathedral, the San Francisco catacombs. Half a day, go in the morning.",
+    "<b>Mercado de Surquillo</b> for fruit you have never seen, and a cheap ceviche counter lunch."
+  ],
+  skip:"Nothing much — but note there is an <b>active pertussis outbreak in Peru</b>. Confirm the baby's DTaP schedule and consider cocooning both adults before you go. Hep A and typhoid are also recommended for the trip.",
+  log:[
+    "<b>SCL → LIM:</b> 3h45–3h52 nonstop, ~13 flights a day on LATAM, SKY and JetSMART. The easiest leg in South America.",
+    "<b>LIM → CUZ:</b> 1h20, ~308 flights a week. <b>Take a morning departure</b> — afternoon Andean weather causes delays and diversions, and Cusco has a well-known delay record.",
+    "<b>LIM → Buenos Aires:</b> 4h25 nonstop.",
+    "<b>Stay in Miraflores or Barranco.</b> Water is cold year-round (Humboldt current) — this is not a swimming coast."
+  ],
+  day:["ballestas"]
+},
+
+sacredvalley:{
+  n:"Sacred Valley", r:"Peru · Urubamba / Ollantaytambo", lat:-13.3055, lon:-72.1147, alt:2871, altHi:true,
+  f:"Urubamba_-_Valle_Sagrado_3.jpg",
+  hook:"The lowest place you can realistically sleep and still see Machu Picchu — and it is still above every published infant guideline.",
+  why:[
+    "You do not have to sleep in Cusco. <b>Fly Lima→Cusco and transfer straight down</b>: Urubamba is 2,871 m and Ollantaytambo 2,792 m, both 500–600 m below the city.",
+    "It is also the nicer place to be — warmer, greener, quieter, and you board the train at Ollantaytambo instead of busing out from Cusco.",
+    "Ollantaytambo is a living Inca town: the original street grid and water channels are still in use."
+  ],
+  baby:"<b>Read this carefully — it is the one genuinely difficult call on the trip.</b><br><br>Published paediatric guidance puts the sleeping ceiling for a child under one at <b>1,600–2,000 m</b> (UIAA; French expert panels). The Sacred Valley at 2,800–2,900 m is above every one of those numbers. It is far better than Cusco at 3,400 m, but it is not 'safe' by any guideline you can point at.<br><br>Two further problems: <b>the road from Cusco airport climbs over Chinchero at ~3,760 m</b> — higher than Cusco, unavoidable, 30–40 minutes; and <b>AMS in a pre-verbal baby is essentially undiagnosable</b> — the only symptoms are fussiness, poor feeding and disturbed sleep, which is also what teething, jet lag and a new cot look like.<br><br><b>This is a paediatrician conversation, not a web-search answer.</b> Non-negotiables if you go: the baby is completely healthy (a blocked nose is a specific contraindication for rapid pressure change), and you have a plan for immediate descent.",
+  hit:[
+    "<b>Machu Picchu</b> — citadel at 2,430 m, roughly 1,000 m <i>below</i> Cusco. Aguas Calientes is 2,040 m, the lowest point of the whole Peru section.",
+    "<b>Ollantaytambo ruins and town</b> — the terraces are a climb, but the town itself is flat and extraordinary.",
+    "<b>Pisac</b> market and ruins, 2,972 m.",
+    "<b>Moray and Maras salt pans</b> — the concentric agricultural terraces and 5,000 salt evaporation ponds."
+  ],
+  skip:"<b>Overnighting in Cusco.</b> And absolutely skip the Hidroeléctrica/Santa Teresa back route — it crosses Abra Málaga at over 4,300 m, takes 7–9 hours, and is landslide-prone in the wet season. It is a backpacker budget route, not a low-altitude workaround.",
+  log:[
+    "<b>Arrival:</b> LIM→CUZ 1h20 (morning flight). <b>Book a private transfer meeting the plane</b> — do not wait for a shared shuttle at 3,310 m. CUZ→Urubamba 1h15–1h30; CUZ→Ollantaytambo 1h45–2h.",
+    "<b>Train Ollantaytambo→Aguas Calientes:</b> ~1h30, PeruRail (~hourly) or Inca Rail (~2-hourly). Infants under 2–3 travel free on a lap but <b>must be registered on the manifest in advance</b>.",
+    "<b>Note for January:</b> Poroy and Wanchaq stations in Cusco close 1 Jan–30 Apr for landslide risk. Irrelevant if you are already in the valley — you board at Ollantaytambo. That is an argument for this routing.",
+    "<b>Machu Picchu tickets:</b> timed hourly entry 06:00–15:00 with a 30-min grace period, 10 sub-routes across 3 circuits, chosen at purchase. <b>Under-3s free but need the original passport or birth certificate at the gate</b> — digital copies get rejected. Strollers prohibited inside. <b>Circuit 3-B has the fewest stairs</b> (1.5–2h) and matters more in the wet. Buy at tuboleto.cultura.pe; tickets are non-refundable.",
+    "<b>⚠ Booking timing:</b> the 2026 calendar opened in a bulk window in early January 2026. If 2027 follows suit you may need to buy within days of release. Check tuboleto.cultura.pe before fixing dates.",
+    "<b>January weather:</b> rainy season — 17–22 rain days, ~150–280 mm. Rain is mostly afternoon and overnight; mornings often clear around 09:00–10:00. <b>Take the first entry window.</b> Wet Inca stone with a baby in a carrier is a real traction issue."
+  ],
+  day:["machupicchu","cusco"]
+},
+
+paracas:{
+  n:"Paracas", r:"Peru · Ica — sea level", lat:-13.8354, lon:-76.2506, alt:6,
+  f:"Paracas_National_Reserve._Ica,_Peru.jpg",
+  hook:"Desert cliffs falling into the Pacific, sea lions by the thousand, and a resort pool. The best low-altitude stop in Peru.",
+  why:[
+    "<b>Zero altitude, 4 hours from Lima on good road</b>, and proper resort infrastructure — Hilton, Aranwa, La Hacienda — with pools.",
+    "The Ballestas Islands: sea lions, Humboldt penguins, thousands of seabirds, and the Candelabra geoglyph cut into the cliff.",
+    "Paracas National Reserve is a genuinely strange landscape — red sand desert meeting cold ocean, with almost nothing living on land."
+  ],
+  baby:"<b>The easiest stop in Peru.</b> Sea level, short drive, hotel pools, 26°C days and no rain. The one caveat is the boat: the Ballestas tour is 1.5–2 hours in an open speedboat — cold, windy, loud, spray, no shade. Take the earliest departure, cover the baby completely, and be prepared for one parent to sit it out.",
+  hit:[
+    "<b>Islas Ballestas</b> — go at 08:00 before the wind picks up.",
+    "<b>Reserva Nacional de Paracas</b> — Playa Roja, the Catedral viewpoint, the desert-ocean edge.",
+    "<b>Pool afternoons.</b> Genuinely: after Cusco or before a long flight, this is the decompression stop."
+  ],
+  skip:"<b>Huacachina.</b> It is 4.5–5.5h from Lima, and <b>under-5s are barred from the dune buggies</b>, which is the only reason to go. Also ignore any source saying Huacachina is at 2,078 m — that is a feet-to-metres error. It is 406 m.",
+  log:[
+    "<b>Lima → Paracas:</b> 3h30–4h30, 260–270 km on the Panamericana Sur. Easy, flat, well-served road.",
+    "<b>January:</b> 26°C day, 20°C night, ~81% humidity, essentially no rain, <b>and windy (~19 kph average)</b>. The wind is the defining feature of the coast here.",
+    "<b>No malaria, no yellow fever risk</b> on this coast — unlike the Amazon."
+  ],
+  day:["ballestas"]
+},
+
+/* ---------------- LEADS: SANTIAGO ---------------- */
+valparaiso:{lead:1,n:"Valparaíso & Viña",r:"Chile · day trip from Santiago",lat:-33.0458,lon:-71.6292,
+  f:"Historic_Quarter_of_the_Seaport_City_of_Valparaíso_04.jpg",
+  hook:"UNESCO hill city of funiculars, murals and corrugated iron. 1h30 from Santiago.",
+  why:["Cerros Alegre and Concepción are the best urban wandering in Chile.","Viña next door is flat with a beach promenade — the two together make a balanced day."],
+  baby:"<b>Valparaíso is hills, stairs, funiculars and cobbles — carrier, not pram.</b> Viña is the opposite: flat, promenade, works perfectly with a pram. Do Valpo as a short carrier-based morning and Viña in the afternoon.",
+  log:["1h30 on Ruta 68 (~120 km).","<b>Do not do New Year here.</b> 'Año Nuevo en el Mar' is ~16,000 fireworks and over a million spectators, with road closures from mid-afternoon and gridlock until 04:00."]},
+cajonmaipo:{lead:1,n:"Cajón del Maipo",r:"Chile · day trip from Santiago",lat:-33.6333,lon:-70.35,
+  f:"Cajón_del_Maipo.jpg",
+  hook:"Andean canyon an hour from the city — and a trap if you go all the way to the reservoir.",
+  why:["San José de Maipo and San Alfonso are 1h–1h20 out, with river, shade and good restaurants.","Cascada de las Ánimas is the easy, comfortable version of the day."],
+  baby:"<b>Stop short.</b> Embalse El Yeso is 2h–2h30 each way with the last 40 km on unpaved washboard — 8 to 12 hours door to door and miserable in a car seat. The lower canyon gives you 80% of it for 30% of the effort.",
+  log:["Road open October–April only.","High clearance recommended beyond San Alfonso."]},
+islanegra:{lead:1,n:"Isla Negra & Casablanca",r:"Chile · day trip from Santiago",lat:-33.4422,lon:-71.6853,
+  f:"Playa_isla_negra,_V_region,_Chili.jpg",
+  hook:"Neruda's seaside house plus Chile's cool-climate wine valley, on the same road.",
+  why:["Neruda's house at Isla Negra — ship figureheads, bottles, shells, facing the surf. Audioguide, ~1h.","<b>Casablanca Valley</b> is only 1h from Santiago and sits on the way to the coast: Casas del Bosque, Matetic, Emiliana (organic, gardens, animals), Viña Indómita."],
+  baby:"Very workable. Most Casablanca vineyards have gardens and terrace restaurants. The Neruda house is small with some stairs. <b>Book tastings ahead in January.</b>",
+  log:["Efficient loop: Casablanca → Isla Negra → Viña, one day. Keep Valparaíso separate."]},
+
+/* ---------------- LEADS: ARAUCANÍA ---------------- */
+pucon:{lead:1,n:"Pucón & Lago Villarrica",r:"Chile · 1h15 from Temuco",lat:-39.2767,lon:-71.9744,
+  f:"Pucon_noviembre_2010.jpg",
+  hook:"The region's tourist capital under a live volcano. Black-sand beaches, ice cream, and total chaos in January.",
+  why:["Black volcanic beaches on Lago Villarrica with the volcano behind them.","Everything you need: supermarkets, pharmacies, restaurants, and the base for Huerquehue, the termas and the volcano."],
+  baby:"Good — the centre is walkable and flat-ish, and La Poza and the Costanera work with a pram. <b>Playa Grande has a steep shelf and can get surf</b>, so supervise closely. Villarrica town, 20 min back, is calmer and cheaper.",
+  log:["Temuco → Villarrica 1h (87 km); → Pucón 1h15 (106 km). Paved, tolls.","<b>January in Pucón is rammed.</b> Parking is painful, prices double or triple. Go early or midweek."]},
+licanray:{lead:1,n:"Lican Ray & Lago Calafquén",r:"Chile · 1h30–2h from Temuco",lat:-39.4833,lon:-72.1333,
+  f:"Villarrica,_Lago_Villarrica_2019_02.jpg",
+  hook:"Probably the best baby-beach day within reach of Temuco.",
+  why:["Lago Calafquén is <b>warmer and calmer than Villarrica</b>.","Two black-sand beaches split by a wooded peninsula with an easy walking circuit and lake viewpoints.","The whole village is walkable in 15 minutes."],
+  baby:"<b>Playa Chica is the pick</b> — sheltered, shallow, calm, warmest water in the region, shade behind the beach. Busy in January but small-scale busy, not Pucón-busy. <b>Black sand gets extremely hot underfoot and there is no natural shade on the sand</b> — bring a shade tent.",
+  log:["Temuco → Lican Ray 107–113 km, 1h30–2h. Lican Ray → Coñaripe 19 km / 20 min (gateway to Termas Geométricas)."]},
+conguillio:{lead:1,n:"PN Conguillío & Volcán Llaima",r:"Chile · 2h–2h30 from Temuco",lat:-38.6667,lon:-71.65,
+  f:"Looking_out_over_Lago_Conguillio.jpg",
+  hook:"The finest araucaria forest in Chile, wrapped around a black lava field and an active volcano.",
+  why:["Visually the most spectacular thing within day-trip range of Temuco — 1,000-year-old monkey puzzle trees, Lago Conguillío, and Llaima's lava flows.","Short trails do most of the work: <b>Sendero Araucarias (0.8 km)</b>, <b>Las Vertientes (0.8 km)</b>, the Truful-Truful canyon boardwalk, and the beach at Playa Linda."],
+  baby:"The short trails are fine in a carrier. <b>The day is the problem, not the walking</b> — 10 to 12 hours door to door with slow ripio inside the park. Consider a night in Melipeuco or Curacautín instead of a single push.",
+  log:["Two approaches: north via Curacautín (Laguna Captrén) or south via Melipeuco (Truful-Truful).","Tue–Sun 08:30–18:30, <b>last entry 14:00</b>. ~CLP 12–15k foreign adult, online only at pasesparques.cl, daily quota.","<b>⚠ Reported open only as far as Truful-Truful as of August 2026 — verify.</b>"]},
+huerquehue:{lead:1,n:"PN Huerquehue",r:"Chile · ~2h from Temuco",lat:-39.1386,lon:-71.6664,
+  f:"Parque_Nacional_Heurquehue_4.jpg",
+  hook:"Araucaria forest above Lago Tinquilco. Beautiful — but be honest about which trail you can do.",
+  why:["Dense araucaria and lenga forest with a chain of small lakes above the main valley.","The lakeshore at Tinquilco near the entrance is flat and pleasant on its own."],
+  baby:"<b>The famous Sendero Los Lagos is 17.6 km, 6–7 hours and 700 m of ascent — that is not a baby hike, carrier or not.</b> The doable portion is the first section to the Nido de Águilas / Trufulco waterfalls, roughly 1–1.5h return.",
+  log:["CLP 10,000 foreign adult. <b>Mandatory online purchase at pasesparques.cl — no walk-ins</b>, daily quota, book days ahead in January.","Bus alternative from Pucón: 08:30 out, 17:10 back, ~CLP 5,800 return."]},
+termas:{lead:1,n:"Termas — Menetúe & Geométricas",r:"Chile · 1h45–2h30 from Temuco",lat:-39.5561,lon:-71.8792,
+  f:"Villarrica,_Lago_Villarrica_2019_02.jpg",
+  hook:"Two very different hot springs, and only one of them really works with a baby.",
+  why:["<b>Termas Menetúe</b> (1h45, Camino Internacional km 30) is the all-round baby pick: 2 outdoor + 3 indoor pools, park setting, restaurant, proper changing facilities. <b>The 26°C outdoor pool is the safe default.</b> From ~CLP 28,000 adult, under-3s free.","<b>Termas Geométricas</b> (2h30, past Coñaripe) is the beautiful one — 20 slate pools along a red-walkway gorge, with dedicated children's pools at ~36°C. Summer pricing CLP 50–55,000 adult, under-3s free."],
+  baby:"<b>Water above ~37°C is unsafe for an infant</b> — they overheat fast and cannot thermoregulate. Menetúe's 26°C pool is the answer. At Geométricas, brief dips in the children's pool only, and note it is 450 m of wooden walkway with steps, no towels provided, no indoor pools — <b>carrier essential</b>.",
+  log:["Geométricas: open 09:00–21:00 in summer, but <b>24 and 31 December 09:00–18:00</b>. Book online, it sells out.","Termas de Huife (35–40°C) is too hot for a baby. <b>⚠ Los Pozones reported temporarily closed since March 2026.</b>"]},
+lagobudi:{lead:1,n:"Lago Budi & the Araucanía coast",r:"Chile · 1h30–2h from Temuco",lat:-38.80,lon:-73.35,
+  f:"Vista_Temuco.jpg",
+  hook:"South America's only inland saltwater lake, a large Lafkenche Mapuche community, and almost no tourists.",
+  why:["<b>Lago Budi</b> is the only inland saltwater lake on the continent — black-necked swans, big birdlife, and community tourism with <i>rukas</i> serving Mapuche food.","<b>Puerto Saavedra</b> (1h30) and <b>Queule</b> (2h, five beaches and excellent seafood) on the open Pacific.","The least crowded thing you can do from Temuco in January."],
+  baby:"The easiest 'adventure' from Temuco — short drives, no altitude, no crowds. <b>But this is not a swimming coast:</b> 14–16°C water, rip currents and constant wind. Treat it as scenery, food and culture.",
+  log:["Temuco → Puerto Saavedra 85 km / 1h30 via Nueva Imperial–Carahue, paved. A small ferry crosses the lake to Puerto Domínguez.","Windy, often overcast in the morning and clearing in the afternoon."]},
+curacautin:{lead:1,n:"Curacautín & Malalcahuello",r:"Chile · 1h20–1h30 from Temuco",lat:-38.4333,lon:-71.8833,
+  f:"Volcán_Llaima_y_Laguna_Conguillío,_desde_Sierra_Nevada.jpg",
+  hook:"Waterfalls you can park next to, indoor hot springs, and araucaria forest under Volcán Lonquimay.",
+  why:["<b>Salto del Indio</b>, 14 km west of Curacautín — waterfall in native forest with easy flat paths, cabins and a restaurant on site. An excellent, low-effort baby stop.","<b>Malalcahuello</b>, 90 min out — araucaria forest at the foot of Lonquimay, the Cráter Navidad lava field, Corralco resort with a spa and pools as a base.","<b>Termas de Malalcahuello / Manzanar</b> have <b>indoor</b> thermal pools — which makes them weather-proof."],
+  baby:"One of the better wet-weather options in the region, precisely because the springs are indoors and the waterfall walk is short and flat.",
+  log:["Also: Salto del Laja is 2h15–2h30 away in Biobío and very commercialised — <b>use it as a stop on the Santiago drive, not a day trip.</b>"]},
+
+/* ---------------- LEADS: LOS LAGOS ---------------- */
+valdivia:{lead:1,n:"Valdivia",r:"Chile · 2h from Temuco",lat:-39.8139,lon:-73.2458,
+  f:"Petrohue_river.jpg",
+  hook:"River city, German brewing heritage, Spanish sea forts — and sea lions in the middle of town.",
+  why:["<b>The Feria Fluvial</b> — a resident colony of South American sea lions hauls out on the riverside market platforms and begs for fish scraps. Free, right in the centre, and instantly captivating for a baby.","<b>Cervecería Kunstmann</b>, 5 km toward Niebla — brewery, museum, big family restaurant with a garden.","<b>Castillo de Niebla</b> (25 min) — a 1671 fortress cut into the cliff with cannons and ramparts over Corral bay, plus ferries to the other forts."],
+  baby:"Very good. Compact, flat riverfront, plenty of cafés, and a proper university city with real medical facilities. Fort ramparts are uneven — carrier there.",
+  log:["Temuco → Valdivia 169 km / ~2h. Doable as a long day trip or an overnight on the way south."]},
+petrohue:{lead:1,n:"Saltos del Petrohué & Volcán Osorno",r:"Chile · 1h from Puerto Varas",lat:-41.1397,lon:-72.4003,
+  f:"Volcán_Osorno_y_lago_Llanquihue_desde_el_sector_Los_Riscos_2.jpg",
+  hook:"Turquoise water forcing through black basalt, under a perfect cone. Almost entirely on boardwalk.",
+  why:["The falls themselves are short paved and boardwalk loops — <b>among the most baby-friendly attractions in Chile</b>.","<b>Volcán Osorno</b>: paved road to the ski centre at 1,200 m and a summer chairlift to ~1,420 m, with views over Lago Llanquihue.","<b>Lago Todos los Santos</b> at Petrohué — emerald water, boats to Peulla, and Chile's oldest national park around it."],
+  baby:"About as easy as national parks get. Boardwalks, short distances, parking close by, café at the volcano base.",
+  log:["Parking CLP 500; entry ~CLP 10,000 foreign adult. Book at pasesparques.cl.","<b>⚠ Reported closing 30 July 2026 due to a cut in Ruta 225-CH. Verify with CONAF before you plan around it.</b>"]},
+frutillar:{lead:1,n:"Frutillar",r:"Chile · 30 min from Puerto Varas",lat:-41.1228,lon:-73.0581,
+  f:"Montaje_de_Frutillar.jpg",
+  hook:"A concert hall standing in the lake, German colonial houses, and the best kuchen in Chile.",
+  why:["<b>Teatro del Lago</b> — a wooden concert hall built out over the water, with a summer classical festival in late January and early February.","<b>Museo Colonial Alemán</b> — open-air, gardens, a working watermill. Good with a small child.","The lakefront itself is one of the prettiest in the country."],
+  baby:"Flat, small, easy. Half a day.",
+  log:["30 min north of Puerto Varas on Lago Llanquihue."]},
+huilohuilo:{lead:1,n:"Huilo Huilo & Siete Lagos",r:"Chile · ~3h from Temuco",lat:-39.8533,lon:-71.9544,
+  f:"Salto_del_Huilo_Huilo.jpg",
+  hook:"Fantasy hotels in 100,000 hectares of Valdivian rainforest, at the end of one of Chile's great drives.",
+  why:["<b>Montaña Mágica</b> — a moss-covered cone with a waterfall pouring off the roof. Also Nothofagus, Reino Fungi, Baobab.","<b>Salto Huilo Huilo and Salto La Leona</b> — short, well-built waterfall trails with railings.","The <b>Ruta Siete Lagos</b> to get there (Villarrica → Calafquén → Pellaifa → Panguipulli → Neltume) is the point as much as the destination."],
+  baby:"Better than expected — the trails are short, the hotels are self-contained with restaurants, and internal distances are small. <b>The 3h of winding lakeside road is the hard part.</b>",
+  log:["Panguipulli → Huilo Huilo is 55 km, almost all paved.","<b>Expensive and books out by mid-year for January</b> (CLP 200–400k/night high season). Panguipulli or Choshuenco are cheaper bases.","Lighter version: Temuco → Lican Ray → Coñaripe → Panguipulli as a loop, ~5h driving, without going as far as Neltume."]},
+pnchiloe:{lead:1,n:"PN Chiloé & Puñihuil",r:"Chile · Chiloé island",lat:-42.10,lon:-74.02,
+  f:"Abtao-Parque_Nacional_Chiloé.jpg",
+  hook:"Rainforest, dunes and a wild Pacific beach — plus the penguin islets on the north coast.",
+  why:["<b>Cucao</b>: Sendero El Tepual through dense forest, the Dunas de Cucao boardwalk, Sendero Los Quiles up to a lake viewpoint.","<b>Puñihuil</b>, 27 km southwest of Ancud — Humboldt and Magellanic penguins nesting together, October to March, chicks in January."],
+  baby:"The Cucao trails are short and largely boardwalk — fine in a carrier. <b>The Puñihuil boat is the question mark:</b> small open boats, 30–45 min, chop is common, infant life jackets do not exist and many operators refuse under-2s. Plan for one parent to stay ashore.",
+  log:["Boat tours only at Puñihuil — no landing, it is a national monument."]},
+
+/* ---------------- LEADS: ARGENTINA ---------------- */
+villalaangostura:{lead:1,n:"Villa La Angostura",r:"Argentina · 1h from Bariloche",lat:-40.7625,lon:-71.6463,
+  f:"Villa_La_Angostura_Montaje.jpg",
+  hook:"Prettier, calmer and more expensive than Bariloche. An excellent family base.",
+  why:["Wooden alpine village on Lago Nahuel Huapi, with the Bosque de Arrayanes reachable by boat from Puerto Bahía Mansa.","<b>Lago Correntoso has the warmest water in the region</b> — the best paddling spot with a baby."],
+  baby:"Small, walkable, calm. Better than Bariloche town if you want quiet, though it books out even harder in January.",
+  log:["85 km / ~1h from Bariloche, 43 km from Paso Cardenal Samoré."]},
+sietelagos:{lead:1,n:"Ruta de los Siete Lagos",r:"Argentina · Villa La Angostura → San Martín",lat:-40.6338,lon:-71.705,
+  f:"CAMINO_DE_LOS_SIETE_LAGOS.jpg",
+  hook:"110 km of paved road through seven lakes. Pure driving time 2 hours; realistically a whole day.",
+  why:["Fully paved on RN40, no 4WD needed, and one of the great drives on the continent.","Viewpoints roughly every 10 km, so it breaks up naturally."],
+  baby:"Perfectly manageable if you break it up — and driving is when babies sleep. <b>Consider doing it one-way and overnighting in San Martín</b> rather than a round trip.",
+  log:["Guided tours run 10–11 hours. Self-drive with stops is a realistic 6–10."]},
+sanmartin:{lead:1,n:"San Martín de los Andes",r:"Argentina · Neuquén",lat:-40.1667,lon:-71.35,
+  f:"CPCpanoramica2.jpg",
+  hook:"Smaller and more elegant than Bariloche, on Lago Lácar with a town beach.",
+  why:["Alpine-style town at the head of a lake, with the beach right at the end of the main street.","The natural terminus of the Siete Lagos drive, and reachable from Pucón over Paso Mamuil Malal."],
+  baby:"Very good with small children — compact, walkable, town beach.",
+  log:["<b>Paso Mamuil Malal (Pucón → Junín de los Andes):</b> 1,253 m, past Volcán Lanín, spectacular. <b>Open 08:00–20:00 only, not 24h</b>, and the Argentine descent has had gravel sections. Much quieter border than Samoré — typically 30–60 min."]},
+tigre:{lead:1,n:"Tigre & the Paraná Delta",r:"Argentina · day trip from BA",lat:-34.4167,lon:-58.5833,
+  f:"J35_009_Bf_Tigre,_EG.jpg",
+  hook:"The better Buenos Aires day trip. Shaded boat, breeze off the water, and only 55 minutes out.",
+  why:["Train from Retiro (Mitre line) ~55 min, or the scenic Tren de la Costa from Olivos.","Delta launches from the Estación Fluvial run 1–2 hour circuits through the channels.","Puerto de Frutos market at the end."],
+  baby:"<b>Much better than Colonia</b> — shaded boat, breeze, half the day, no border. Note delta mosquitoes in summer: long sleeves and infant-safe repellent.",
+  log:["28–35 km north of the city."]},
+ucovalley:{lead:1,n:"Valle de Uco",r:"Argentina · 1h15–2h from Mendoza",lat:-33.6167,lon:-69.1333,
+  f:"Vineyard_in_Mendoza,_Argentina.jpg",
+  hook:"The spectacular Mendoza — high-altitude vineyards under the Andes wall. Also the least baby-compatible.",
+  why:["Salentein, Zuccardi, The Vines, Gimenez Riili — the wineries that put Mendoza on the map.","The setting is genuinely better than Luján de Cuyo."],
+  baby:"<b>Check winery by winery.</b> Several high-end Mendoza tasting rooms do not admit under-12s at all, and it is 1h15–2h each way on partly gravel roads. Luján de Cuyo and Maipú give you 80% of the experience 20 minutes from a nap.",
+  log:["Some Uco lodges do welcome children — but book on that basis explicitly."]},
+
+/* ---------------- LEADS: PERU ---------------- */
+machupicchu:{lead:1,n:"Machu Picchu",r:"Peru · citadel 2,430 m",lat:-13.1633,lon:-72.5456,
+  f:"Machu_Picchu,_2023_(012).jpg",
+  hook:"2,430 m — nearly 1,000 m below Cusco. The site itself is the lowest-altitude part of the Cusco region.",
+  why:["Aguas Calientes at 2,040 m is the lowest point of any Peru highland itinerary. The citadel at 2,430 m is comfortably below Cusco.","<b>January means far fewer people</b>, discounted hotels and an extraordinarily green landscape when the cloud breaks."],
+  baby:"<b>Under-3s enter free but need the ORIGINAL passport or birth certificate at the gate</b> — digital copies are routinely rejected. <b>Strollers are prohibited inside</b>; carrier only. <b>Circuit 3-B ('Realeza') has the fewest stairs</b> — 1.5–2h, still covering the Temple of the Sun, Royal Palace, Sacred Rock and Temple of the Condor. No route is step-free. In January, wet Inca stone with a baby on your back is a genuine traction issue.",
+  log:["Timed hourly entry 06:00–15:00, 30-minute grace period, then refused. 3 circuits / 10 sub-routes chosen at purchase — no roaming between them.","Daily cap 4,500 (5,600 on high-season dates; <b>1 January is one</b>). Tickets non-refundable. Buy at tuboleto.cultura.pe.","<b>Bus Aguas Calientes ↔ citadel:</b> 25–30 min, USD 36 return for foreign adults, <b>under-5s free on a lap</b>.","<b>Take the first entry window</b> — January rain is mostly afternoon and overnight, mornings often clear around 09:00–10:00."]},
+cusco:{lead:1,n:"Cusco — the altitude problem",r:"Peru · 3,399 m",lat:-13.5169,lon:-71.9786,
+  f:"Iglesia_de_la_Compañía_de_Jesús,_Plaza_de_Armas,_Cusco,_Perú,_2015-07-31,_DD_74.jpg",
+  hook:"3,399 m, reached by jet from sea level. This is the one place on the trip I would not sleep with a 10-month-old.",
+  why:["It is a beautiful city and you will be sad to skip it. That is the trade.","<b>You do not have to sleep here to see Machu Picchu</b> — that is the whole point of the Sacred Valley routing."],
+  baby:"<b>Sleeping at 3,399 m with a child under one is contrary to every published paediatric guideline</b>, and arriving by air is by design an instantaneous ascent with zero acclimatisation — precisely the scenario altitude medicine tells you to avoid. Note also that <b>prophylactic altitude drugs are advised against in young children</b> — the answer is a slower profile, not medication.",
+  log:["Airport CUZ sits at 3,310 m. Unavoidable exposure on arrival is roughly 1.5–2.5 hours total including the drive.","<b>The road down to the Sacred Valley crosses Chinchero at ~3,762 m</b> — higher than Cusco itself, for 30–40 minutes. There is no way around it.","<b>Medical care outside Lima is well below Western standards.</b> Medical evacuation insurance is strongly advised."]},
+ballestas:{lead:1,n:"Islas Ballestas",r:"Peru · from Paracas",lat:-13.7358,lon:-76.3964,
+  f:"Islas_Ballestas_-_panoramio_(3).jpg",
+  hook:"Sea lions, penguins and a hillside geoglyph nobody can explain. Sea level, 20 minutes offshore.",
+  why:["Thousands of sea lions, Humboldt penguins, and seabird colonies dense enough to have been mined for guano.","The <b>Candelabra</b> — a 180 m figure cut into the cliff face, visible only from the water."],
+  baby:"<b>1.5–2 hours in an open speedboat</b>: cold, windy, loud, and constant spray with no shade. Take the earliest departure before the wind builds, cover the baby completely, and accept that one of you may sit it out.",
+  log:["Boats leave from Paracas. No landing permitted on the islands."]}
+};
+
+/* ============================================================
+   VERSIONS
+   ============================================================ */
+const V = {
+ v1:{
+  name:"A · The Grand Loop",
+  one:"Everything, in one clean circle. Peru up front while you are fresh, then a single anticlockwise loop through southern Chile, Patagonia, Buenos Aires and Mendoza with almost no backtracking.",
+  tag:"Most coverage · 12 stops · 10 flights",
+  pros:["Machu Picchu included","All three Argentina picks: BA, Bariloche and Mendoza","The route never doubles back — every flight moves you forward","Peru done before Christmas, so the second half is one continuous overland-plus-short-hop loop"],
+  cons:["Busiest version — a move every 3–4 days outside the Temuco block","Buenos Aires falls in mid-January: hottest, most humid, and the month locals leave","Sacred Valley in December is still rainy season"],
+  legs:[
+   {p:"santiago", a:"Dec 6", b:"Dec 11", n:5, note:"Land, sleep, see friends. Do not plan anything for day one."},
+   {p:"lima",     a:"Dec 11", b:"Dec 14", n:3, in:"fly", t:"SCL → LIM · 3h50"},
+   {p:"sacredvalley", a:"Dec 14", b:"Dec 17", n:3, in:"fly", t:"LIM → CUZ · 1h20 + 1h30 transfer down"},
+   {p:"paracas",  a:"Dec 17", b:"Dec 19", n:2, in:"fly", t:"CUZ → LIM · 1h20 + 4h drive south"},
+   {p:"santiago", a:"Dec 19", b:"Dec 20", n:1, in:"fly", t:"LIM → SCL · 3h50 · transit night"},
+   {p:"temuco",   a:"Dec 20", b:"Jan 5",  n:16, in:"fly", t:"SCL → ZCO · 1h26", star:"Christmas & New Year"},
+   {p:"chiloe",   a:"Jan 5",  b:"Jan 8",  n:3, in:"road", t:"Drive 500 km · 6h30 incl. Pargua ferry"},
+   {p:"puertovaras", a:"Jan 8", b:"Jan 11", n:3, in:"road", t:"Drive back north · ~3h + ferry"},
+   {p:"bariloche", a:"Jan 11", b:"Jan 15", n:4, in:"road", t:"Paso Cardenal Samoré · 1,314 m · ~5h + border"},
+   {p:"buenosaires", a:"Jan 15", b:"Jan 20", n:5, in:"fly", t:"BRC → AEP · 2h25"},
+   {p:"mendoza",  a:"Jan 20", b:"Jan 22", n:2, in:"fly", t:"AEP → MDZ · 1h55"},
+   {p:"santiago", a:"Jan 22", b:"Jan 26", n:4, in:"fly", t:"MDZ → SCL · 1h05 over the Andes"}
+  ]
+ },
+ v2:{
+  name:"B · Right Season",
+  one:"Sequenced around the weather rather than the map. Buenos Aires and Mendoza in December when the city is alive and 3°C cooler; the Chilean south and Peru in January when both are at their best.",
+  tag:"Best conditions · 11 stops · longest family block",
+  pros:["<b>Buenos Aires in December</b> — restaurants open, locals in town, ~29°C instead of 33°C","17 nights in Temuco, the most family time of the three","Lima in January is its sunniest, clearest month","Santiago → Mendoza is a 65-minute flight; it costs almost nothing to add"],
+  cons:["<b>Machu Picchu in January</b> — the wettest month, 17–22 rain days","No Bariloche — the one real casualty","Peru at the end means a long-haul-adjacent block right before flying home"],
+  legs:[
+   {p:"santiago", a:"Dec 6", b:"Dec 11", n:5},
+   {p:"mendoza",  a:"Dec 11", b:"Dec 14", n:3, in:"fly", t:"SCL → MDZ · 1h05"},
+   {p:"buenosaires", a:"Dec 14", b:"Dec 19", n:5, in:"fly", t:"MDZ → AEP · 1h55"},
+   {p:"santiago", a:"Dec 19", b:"Dec 20", n:1, in:"fly", t:"EZE → SCL · 2h00 · transit night"},
+   {p:"temuco",   a:"Dec 20", b:"Jan 6",  n:17, in:"fly", t:"SCL → ZCO · 1h26", star:"Christmas & New Year"},
+   {p:"chiloe",   a:"Jan 6",  b:"Jan 10", n:4, in:"road", t:"Drive 6h30 incl. ferry"},
+   {p:"puertovaras", a:"Jan 10", b:"Jan 14", n:4, in:"road", t:"~3h north"},
+   {p:"lima",     a:"Jan 14", b:"Jan 17", n:3, in:"fly", t:"PMC → SCL → LIM · one long travel day"},
+   {p:"sacredvalley", a:"Jan 17", b:"Jan 20", n:3, in:"fly", t:"LIM → CUZ · morning flight, straight down"},
+   {p:"paracas",  a:"Jan 20", b:"Jan 23", n:3, in:"fly", t:"CUZ → LIM + 4h drive south"},
+   {p:"santiago", a:"Jan 23", b:"Jan 26", n:3, in:"fly", t:"LIM → SCL · 3h50"}
+  ]
+ },
+ v3:{
+  name:"C · Sea Level & Slow",
+  one:"The version where the altitude question never comes up. Peru stays on the coast, Machu Picchu waits for a future trip, and the nights you save go into longer stays everywhere else.",
+  tag:"No altitude · 10 stops · longest average stay",
+  pros:["<b>Nothing above 1,314 m</b> (Paso Samoré) — no paediatric conversation required","Longest average stay of the three; only 10 moves in 52 days","Chiloé and the Lake District get 4 nights each instead of 3","Bariloche and Buenos Aires both included, in the right order"],
+  cons:["<b>No Machu Picchu.</b> That is the whole trade.","No Mendoza","Buenos Aires lands in late January — hot, humid, and half-empty"],
+  legs:[
+   {p:"santiago", a:"Dec 6", b:"Dec 11", n:5},
+   {p:"lima",     a:"Dec 11", b:"Dec 15", n:4, in:"fly", t:"SCL → LIM · 3h50"},
+   {p:"paracas",  a:"Dec 15", b:"Dec 18", n:3, in:"road", t:"4h down the Panamericana Sur"},
+   {p:"santiago", a:"Dec 18", b:"Dec 19", n:1, in:"fly", t:"LIM → SCL · transit night"},
+   {p:"temuco",   a:"Dec 19", b:"Jan 5",  n:17, in:"fly", t:"SCL → ZCO · 1h26", star:"Christmas & New Year"},
+   {p:"chiloe",   a:"Jan 5",  b:"Jan 9",  n:4, in:"road", t:"Drive 6h30 incl. ferry"},
+   {p:"puertovaras", a:"Jan 9", b:"Jan 13", n:4, in:"road", t:"~3h north"},
+   {p:"bariloche", a:"Jan 13", b:"Jan 17", n:4, in:"road", t:"Paso Samoré · 1,314 m · ~5h + border"},
+   {p:"buenosaires", a:"Jan 17", b:"Jan 22", n:5, in:"fly", t:"BRC → AEP · 2h25"},
+   {p:"santiago", a:"Jan 22", b:"Jan 26", n:4, in:"fly", t:"EZE → SCL · 2h00"}
+  ]
+ }
+};
+
+/* ============================================================
+   MAP
+   ============================================================ */
+const map = L.map('map',{zoomControl:true,attributionControl:true,minZoom:3,maxZoom:12})
+  .setView([-30,-70],4);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{
+  attribution:'&copy; OpenStreetMap &copy; CARTO', subdomains:'abcd', maxZoom:19
+}).addTo(map);
+
+const routeLayer = L.layerGroup().addTo(map);
+const pinLayer   = L.layerGroup().addTo(map);
+const leadLayer  = L.layerGroup().addTo(map);
+
+let cur='v1', sel=null, showLeads=false, markers={};
+
+function pinIcon(id,num,selected){
+  const p=P[id];
+  return L.divIcon({
+    className:'', iconSize:[60,74], iconAnchor:[30,74],
+    html:`<div class="pinwrap ${selected?'sel':''}">
+      <div class="head"></div>
+      <div class="polaroid"><img src="${THUMB(p.f)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'"><div class="cap">${p.n}</div></div>
+      <div class="num">${num}</div>
+    </div>`
+  });
+}
+function leadIcon(selected){
+  return L.divIcon({className:'',iconSize:[15,15],iconAnchor:[7,7],
+    html:`<div class="leadwrap ${selected?'sel':''}"><div class="dot"></div></div>`});
+}
+
+function draw(){
+  routeLayer.clearLayers(); pinLayer.clearLayers(); leadLayer.clearLayers(); markers={};
+  const legs=V[cur].legs;
+
+  // route lines
+  for(let i=1;i<legs.length;i++){
+    const A=P[legs[i-1].p], B=P[legs[i].p];
+    if(A.lat===B.lat && A.lon===B.lon) continue;
+    const road = legs[i].in==='road';
+    L.polyline([[A.lat,A.lon],[B.lat,B.lon]],{
+      color: road?'#d9a441':'#e0503f',
+      weight: road?3.5:2.5,
+      opacity:.85,
+      dashArray: road?null:'7,8'
+    }).addTo(routeLayer);
+  }
+
+  // stop pins (dedupe repeated Santiago — keep all, offset labels naturally)
+  const seen={};
+  legs.forEach((l,i)=>{
+    const p=P[l.p];
+    const key=l.p;
+    seen[key]=(seen[key]||0)+1;
+    if(seen[key]>1 && key==='santiago') return; // one Santiago pin
+    const nums=legs.map((x,j)=>x.p===key?j+1:null).filter(x=>x).join('/');
+    const m=L.marker([p.lat,p.lon],{icon:pinIcon(l.p,nums,sel===l.p),zIndexOffset:400})
+      .addTo(pinLayer)
+      .on('click',()=>select(l.p));
+    markers[l.p]=m;
+  });
+
+  // leads
+  if(showLeads){
+    Object.keys(P).filter(k=>P[k].lead).forEach(k=>{
+      const p=P[k];
+      L.marker([p.lat,p.lon],{icon:leadIcon(sel===k),zIndexOffset:100})
+        .addTo(leadLayer)
+        .bindTooltip(p.n,{className:'tt',direction:'top',offset:[0,-8]})
+        .on('click',()=>select(k));
+    });
+  }
+  timeline();
+}
+
+/* ============================================================
+   DOSSIER
+   ============================================================ */
+function legFor(id){ return V[cur].legs.find(l=>l.p===id); }
+
+function dossier(id){
+  const p=P[id], d=document.getElementById('dossier');
+  const legs=V[cur].legs.filter(l=>l.p===id);
+  const idx=V[cur].legs.findIndex(l=>l.p===id);
+
+  let stamps='';
+  legs.forEach(l=>{ stamps+=`<span class="stamp s-date">${l.a} – ${l.b} · ${l.n} night${l.n>1?'s':''}</span>`; });
+  if(p.lead) stamps+=`<span class="stamp s-lead">Optional lead</span>`;
+  if(p.alt!==undefined) stamps+=`<span class="stamp s-alt ${p.altHi?'hi':''}">${p.alt.toLocaleString()} m</span>`;
+  if(id==='cusco') stamps=`<span class="stamp s-alt hi">3,399 m · not recommended</span>`;
+  if(id==='machupicchu') stamps=`<span class="stamp s-lead">Optional lead</span><span class="stamp s-alt">2,430 m citadel</span>`;
+
+  const sec=(t,html)=> html?`<div class="sec"><h3>${t}</h3>${html}</div>`:'';
+  const ul=a=> a&&a.length?`<ul>${a.map(x=>`<li>${x}</li>`).join('')}</ul>`:'';
+
+  d.innerHTML=`
+   <div class="card">
+     <img class="hero" src="${IMG(p.f)}" alt="${p.n}" onerror="this.style.display='none'">
+     <div class="body">
+       <div class="eyebrow">${p.r}</div>
+       <h2>${p.n}</h2>
+       <div class="sub">${p.hook}</div>
+       <div class="stamps">${stamps}</div>
+       ${sec('Why it earns a pin', ul(p.why))}
+       ${sec('With the baby', `<div class="${(p.altHi||id==='cusco')?'warn':'good'}">${p.baby}</div>`)}
+       ${sec('Do this', ul(p.hit))}
+       ${p.skip?sec('Skip / be careful', `<div class="warn">${p.skip}</div>`):''}
+       ${sec('Logistics', ul(p.log))}
+       ${p.day&&p.day.length?sec('Leads from here', `<ul>${p.day.map(k=>`<li><a href="#" onclick="select('${k}');return false" style="color:#8a5a12;font-weight:600">${P[k].n}</a> — ${P[k].hook}</li>`).join('')}</ul>`):''}
+     </div>
+   </div>
+   ${idx>=0?`<div class="navrow">
+     <button class="navbtn" onclick="step(-1)" ${idx<=0?'disabled':''}>← previous stop</button>
+     <button class="navbtn" onclick="step(1)" ${idx>=V[cur].legs.length-1?'disabled':''}>next stop →</button>
+   </div>`:`<div class="navrow"><button class="navbtn" onclick="select(V[cur].legs[0].p)">← back to the route</button></div>`}
+  `;
+  d.scrollTop=0;
+}
+
+function step(dir){
+  const legs=V[cur].legs;
+  let i=legs.findIndex(l=>l.p===sel);
+  i=Math.max(0,Math.min(legs.length-1,i+dir));
+  select(legs[i].p);
+}
+
+function select(id){
+  sel=id; draw(); dossier(id);
+  const p=P[id];
+  map.flyTo([p.lat,p.lon], Math.max(map.getZoom(),6), {duration:.7});
+}
+
+/* ============================================================
+   TIMELINE
+   ============================================================ */
+function timeline(){
+  const bar=document.getElementById('tlbar'); bar.innerHTML='';
+  const legs=V[cur].legs, total=legs.reduce((s,l)=>s+l.n,0);
+  legs.forEach(l=>{
+    const el=document.createElement('div');
+    el.className='seg'+(l.star?' anchor':'')+(sel===l.p?' on':'');
+    el.style.flex=l.n;
+    el.title=`${P[l.p].n} · ${l.a}–${l.b} · ${l.n} night${l.n>1?'s':''}${l.t?' · '+l.t:''}`;
+    el.innerHTML=`<span>${l.n>=3?P[l.p].n:''}</span><em>${l.n}</em>`;
+    el.onclick=()=>select(l.p);
+    bar.appendChild(el);
+  });
+  document.getElementById('tlA').textContent=`5 Dec · Berlin → ${legs[0].a} Santiago  ·  ${total} nights on the ground`;
+}
+
+/* ============================================================
+   COMPARE
+   ============================================================ */
+function compare(){
+  const c=document.getElementById('compare');
+  const row=(k)=>{
+    const v=V[k];
+    const stops=v.legs.length;
+    const flights=v.legs.filter(l=>l.in==='fly').length+2;
+    const has=n=>v.legs.some(l=>l.p===n);
+    return `<div class="ccard">
+      <div class="tag">${v.tag}</div>
+      <h3>${v.name}</h3>
+      <div class="one">${v.one}</div>
+      <dl>
+        <dt>Includes</dt><dd>
+          <span class="pill ${has('sacredvalley')?'y':'n'}">Machu Picchu ${has('sacredvalley')?'✓':'✗'}</span>
+          <span class="pill ${has('bariloche')?'y':'n'}">Bariloche ${has('bariloche')?'✓':'✗'}</span>
+          <span class="pill ${has('mendoza')?'y':'n'}">Mendoza ${has('mendoza')?'✓':'✗'}</span>
+          <span class="pill y">Buenos Aires ✓</span>
+          <span class="pill y">Chiloé ✓</span>
+        </dd>
+        <dt>Shape</dt><dd>${stops} stops · ~${flights} flights · Temuco block ${v.legs.find(l=>l.star).n} nights</dd>
+        <dt>Highest sleeping altitude</dt><dd>${has('sacredvalley')?'<b style="color:#8f1d12">2,871 m — Sacred Valley</b>':'<b style="color:#28615d">800 m — Bariloche</b>'}</dd>
+        <dt>Buenos Aires falls in</dt><dd>${v.legs.find(l=>l.p==='buenosaires').a.startsWith('Dec')?'<b style="color:#28615d">December — the better month</b>':'January — hot, humid, locals gone'}</dd>
+        <dt>Argues for itself because</dt><dd>${v.pros.map(x=>'· '+x).join('<br>')}</dd>
+        <dt>Costs you</dt><dd>${v.cons.map(x=>'· '+x).join('<br>')}</dd>
+      </dl>
+    </div>`;
+  };
+  c.innerHTML=`
+    <h1>Three ways to spend 52 nights</h1>
+    <p class="lede">Berlin out 5 December 2026, back 27 January 2027. Christmas and New Year in Temuco is fixed in all three; everything else is negotiable. The real fork is the second question below.</p>
+    <div class="cgrid">${['v1','v2','v3'].map(row).join('')}</div>
+
+    <div class="notes">
+      <h3>The two decisions that actually change the map</h3>
+      <ul>
+        <li><b>1. Machu Picchu with a 10-month-old.</b> You can avoid <i>sleeping</i> in Cusco — fly Lima→Cusco and transfer straight down to Urubamba (2,871 m) or Ollantaytambo (2,792 m), then train to Aguas Calientes at 2,040 m and the citadel at 2,430 m. But two things do not go away: the road out of Cusco airport crosses <b>Chinchero at ~3,760 m</b>, higher than Cusco itself, for 30–40 minutes; and published paediatric guidance puts the sleeping ceiling for a child under one at <b>1,600–2,000 m</b>, which the Sacred Valley exceeds. Add that <b>AMS in a pre-verbal baby is effectively undiagnosable</b> — the symptoms are fussiness, poor feeding and bad sleep, i.e. teething and jet lag. This is a paediatrician conversation. <b>Versions A and B assume yes. Version C assumes no.</b></li>
+        <li><b>2. Buenos Aires in December or January.</b> December: ~29°C, city fully alive. January: 31°C+ with heavy humidity, and porteños leave for the coast — independent restaurants and shops close for two weeks to a month. <b>Only Version B puts BA in December</b>, and it is the single highest-value swap available.</li>
+        <li><b>Do not drive the Cristo Redentor pass to Mendoza.</b> The tunnel is 3,175 m and the Argentine border post sits at ~3,200 m, which is where you queue — potentially 1–2 hours stationary. Santiago→Mendoza is a <b>65-minute flight</b> for roughly the price of the bus.</li>
+        <li><b>Paso Cardenal Samoré is the easy crossing.</b> Paved both sides, only 1,314 m, open year-round. But a <b>Chilean rental car needs a notarised permiso requested 5–10 working days ahead</b> (USD 90–290, often SUV-only) and <b>must return to Chile</b> — one-way drop-offs across the border do not exist. For a one-way into Argentina, take the direct bus and rent locally.</li>
+        <li><b>Book by September or October 2026.</b> Chilean and Argentine school holidays run mid-December to early March. Pucón, Chiloé, Puerto Varas and especially Bariloche double or triple in price and sell out. Most Chilean national parks are now <b>online-only with daily quotas</b> at pasesparques.cl. Machu Picchu tickets may need buying within days of the 2027 calendar opening.</li>
+        <li><b>Bring your own car seat.</b> Chilean law requires under-9s restrained in the rear and it is enforced on Ruta 5 in summer. Rental seats are CLP 5–10k/day, limited in January, and are the most commonly failed reservation item in the country. Airlines carry car seats free as checked baggage.</li>
+        <li><b>Documents for the baby:</b> own passport, plus an <b>unlaminated original birth certificate</b> — laminated civil documents are rejected by both Chilean PDI and Argentine Migraciones, and Chilean exit control asks for proof of parentage even when both parents are present.</li>
+        <li><b>Verify before booking:</b> Saltos del Petrohué (reported Ruta 225-CH closure, July 2026) · PN Conguillío (reported open only to Truful-Truful) · Termas Los Pozones (reported closed since March 2026) · Volcán Villarrica alert level at SERNAGEOMIN.</li>
+      </ul>
+    </div>`;
+}
+
+/* ============================================================
+   UI
+   ============================================================ */
+document.querySelectorAll('.tab[data-v]').forEach(b=>{
+  b.onclick=()=>{
+    document.getElementById('compare').classList.remove('show');
+    document.querySelectorAll('.tab[data-v]').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    cur=b.dataset.v; sel=V[cur].legs[0].p; draw(); dossier(sel);
+    map.flyToBounds(L.latLngBounds(V[cur].legs.map(l=>[P[l.p].lat,P[l.p].lon])),{padding:[70,70],duration:.8});
+  };
+});
+document.getElementById('leadsBtn').onclick=function(){
+  showLeads=!showLeads; this.classList.toggle('on',showLeads);
+  this.textContent = showLeads? '◦ Hide leads' : '◦ Show all leads';
+  draw();
+};
+document.getElementById('cmpBtn').onclick=function(){
+  const c=document.getElementById('compare');
+  c.classList.toggle('show');
+  this.classList.toggle('on',c.classList.contains('show'));
+  if(c.classList.contains('show')) compare();
+};
+
+sel='santiago';
+draw(); dossier('santiago');
+map.fitBounds(L.latLngBounds(V.v1.legs.map(l=>[P[l.p].lat,P[l.p].lon])),{padding:[70,70]});
+</script>
+</body>
+</html>
