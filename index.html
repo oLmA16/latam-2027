@@ -282,6 +282,9 @@ header{
   border:2px solid var(--lead);box-shadow:0 2px 6px rgba(0,0,0,.55);transition:.15s}
 .leadwrap:hover .dot{transform:scale(1.55);background:var(--lead)}
 .leadwrap.sel .dot{transform:scale(1.6);background:var(--accent2);border-color:var(--accent2)}
+.leadwrap.outx .dot{border-color:#8e8e8e;background:rgba(140,140,140,.3);opacity:.7;border-style:dashed}
+.leadwrap.outx:hover .dot{background:#8e8e8e;opacity:1}
+.stamp.s-out{color:#8f1d12;border-color:#c9564a;background:rgba(192,57,43,.12)}
 
 .leaflet-tooltip.tt{background:var(--card);border:1px solid var(--rule);color:var(--ink);
   font-family:var(--f-mono);font-size:11px;font-weight:700;letter-spacing:.4px;
@@ -603,34 +606,27 @@ lima:{
   day:["ballestas"]
 },
 
-sacredvalley:{
-  n:"Sacred Valley", r:"Peru · Urubamba / Ollantaytambo", lat:-13.3055, lon:-72.1147, alt:2871, altHi:true,
+sacredvalley:{lead:1, out:1,
+  n:"Sacred Valley", r:"Peru · Urubamba — 2,871 m", lat:-13.3055, lon:-72.1147, alt:2871, altHi:true,
   f:"Urubamba_-_Valle_Sagrado_3.jpg",
-  hook:"The lowest place you can realistically sleep and still see Machu Picchu — and it is still above every published infant guideline.",
+  hook:"Ruled out on altitude. Kept on the board so the reasoning is on the record — and so it is easy to put back for a future trip.",
   why:[
-    "You do not have to sleep in Cusco. <b>Fly Lima→Cusco and transfer straight down</b>: Urubamba is 2,871 m and Ollantaytambo 2,792 m, both 500–600 m below the city.",
-    "It is also the nicer place to be — warmer, greener, quieter, and you board the train at Ollantaytambo instead of busing out from Cusco.",
-    "Ollantaytambo is a living Inca town: the original street grid and water channels are still in use."
+    "This was the lowest place you could realistically sleep and still see Machu Picchu: Urubamba at 2,871 m, Ollantaytambo at 2,792 m — 500–600 m below Cusco.",
+    "It was not low enough. <b>Published paediatric guidance puts the sleeping ceiling for a child under one at 1,600–2,000 m</b> (UIAA 2008; French expert panels 2023 and 2025). The valley floor clears that by nearly a kilometre.",
+    "<b>The road makes it worse, not better.</b> Getting from Cusco airport down to the valley crosses Chinchero at roughly 3,760 m — higher than Cusco itself — for 30 to 40 minutes. There is no route that avoids it."
   ],
-  baby:"<b>Read this carefully — it is the one genuinely difficult call on the trip.</b><br><br>Published paediatric guidance puts the sleeping ceiling for a child under one at <b>1,600–2,000 m</b> (UIAA; French expert panels). The Sacred Valley at 2,800–2,900 m is above every one of those numbers. It is far better than Cusco at 3,400 m, but it is not 'safe' by any guideline you can point at.<br><br>Two further problems: <b>the road from Cusco airport climbs over Chinchero at ~3,760 m</b> — higher than Cusco, unavoidable, 30–40 minutes; and <b>AMS in a pre-verbal baby is essentially undiagnosable</b> — the only symptoms are fussiness, poor feeding and disturbed sleep, which is also what teething, jet lag and a new cot look like.<br><br><b>This is a paediatrician conversation, not a web-search answer.</b> Non-negotiables if you go: the baby is completely healthy (a blocked nose is a specific contraindication for rapid pressure change), and you have a plan for immediate descent.",
+  baby:"<b>The decisive problem is not the altitude number, it is that you cannot read the symptoms.</b> Acute mountain sickness in a pre-verbal baby presents as unexplained fussiness, poor feeding and disturbed sleep — which is indistinguishable from teething, jet lag, a new cot and a long travel day. The only assessment tool, the Children's Lake Louise Score, is a research instrument that asks a parent to rate exactly those things.<br><br>Add that prophylactic altitude drugs are advised against in young children, and that medical care outside Lima is well below Western standards, and the honest answer is that you would be guessing for three days with no way to tell whether you were guessing right.",
   hit:[
-    "<b>Machu Picchu</b> — citadel at 2,430 m, roughly 1,000 m <i>below</i> Cusco. Aguas Calientes is 2,040 m, the lowest point of the whole Peru section.",
-    "<b>Ollantaytambo ruins and town</b> — the terraces are a climb, but the town itself is flat and extraordinary.",
-    "<b>Pisac</b> market and ruins, 2,972 m.",
-    "<b>Moray and Maras salt pans</b> — the concentric agricultural terraces and 5,000 salt evaporation ponds."
+    "<b>Machu Picchu is not going anywhere.</b> The citadel at 2,430 m and Aguas Calientes at 2,040 m both work fine for a walking, talking child who can tell you they have a headache.",
+    "Realistic revisit window: age four or older, dry season (May–September), with three or four days built in low."
   ],
-  skip:"<b>Overnighting in Cusco.</b> And absolutely skip the Hidroeléctrica/Santa Teresa back route — it crosses Abra Málaga at over 4,300 m, takes 7–9 hours, and is landslide-prone in the wet season. It is a backpacker budget route, not a low-altitude workaround.",
+  skip:"For completeness, the routes that look like workarounds and are not: the Hidroeléctrica/Santa Teresa back road crosses Abra Málaga at over 4,300 m and takes 7–9 hours; and Chinchero's new airport, when it eventually opens, sits higher than Cusco.",
   log:[
-    "<b>Arrival:</b> LIM→CUZ 1h20 (morning flight). <b>Book a private transfer meeting the plane</b> — do not wait for a shared shuttle at 3,310 m. CUZ→Urubamba 1h15–1h30; CUZ→Ollantaytambo 1h45–2h.",
-    "<b>Train Ollantaytambo→Aguas Calientes:</b> ~1h30, PeruRail (~hourly) or Inca Rail (~2-hourly). Infants under 2–3 travel free on a lap but <b>must be registered on the manifest in advance</b>.",
-    "<b>Note for January:</b> Poroy and Wanchaq stations in Cusco close 1 Jan–30 Apr for landslide risk. Irrelevant if you are already in the valley — you board at Ollantaytambo. That is an argument for this routing.",
-    "<b>Machu Picchu tickets:</b> timed hourly entry 06:00–15:00 with a 30-min grace period, 10 sub-routes across 3 circuits, chosen at purchase. <b>Under-3s free but need the original passport or birth certificate at the gate</b> — digital copies get rejected. Strollers prohibited inside. <b>Circuit 3-B has the fewest stairs</b> (1.5–2h) and matters more in the wet. Buy at tuboleto.cultura.pe; tickets are non-refundable.",
-    "<b>⚠ Booking timing:</b> the 2026 calendar opened in a bulk window in early January 2026. If 2027 follows suit you may need to buy within days of release. Check tuboleto.cultura.pe before fixing dates.",
-    "<b>January weather:</b> rainy season — 17–22 rain days, ~150–280 mm. Rain is mostly afternoon and overnight; mornings often clear around 09:00–10:00. <b>Take the first entry window.</b> Wet Inca stone with a baby in a carrier is a real traction issue."
+    "<b>Everything now on the board sleeps at or below 800 m.</b> The highest point you will cross is Paso Cardenal Samoré at 1,314 m, paved, for about twenty minutes.",
+    "The nights this freed went to Lima, Paracas and the Chilean south."
   ],
   day:["machupicchu","cusco"]
 },
-
 paracas:{
   n:"Paracas", r:"Peru · Ica — sea level", lat:-13.8354, lon:-76.2506, alt:6,
   f:"Paracas_National_Reserve._Ica,_Peru.jpg",
@@ -821,13 +817,13 @@ ucovalley:{lead:1,n:"Valle de Uco",r:"Argentina · 1h15–2h from Mendoza",lat:-
   log:["Some Uco lodges do welcome children — but book on that basis explicitly."]},
 
 /* ---------------- LEADS: PERU ---------------- */
-machupicchu:{lead:1,n:"Machu Picchu",r:"Peru · citadel 2,430 m",lat:-13.1633,lon:-72.5456,
+machupicchu:{lead:1, out:1,n:"Machu Picchu",r:"Peru · citadel 2,430 m",lat:-13.1633,lon:-72.5456,
   f:"Machu_Picchu,_2023_(012).jpg",
   hook:"2,430 m — nearly 1,000 m below Cusco. The site itself is the lowest-altitude part of the Cusco region.",
   why:["Aguas Calientes at 2,040 m is the lowest point of any Peru highland itinerary. The citadel at 2,430 m is comfortably below Cusco.","<b>January means far fewer people</b>, discounted hotels and an extraordinarily green landscape when the cloud breaks."],
   baby:"<b>Under-3s enter free but need the ORIGINAL passport or birth certificate at the gate</b> — digital copies are routinely rejected. <b>Strollers are prohibited inside</b>; carrier only. <b>Circuit 3-B ('Realeza') has the fewest stairs</b> — 1.5–2h, still covering the Temple of the Sun, Royal Palace, Sacred Rock and Temple of the Condor. No route is step-free. In January, wet Inca stone with a baby on your back is a genuine traction issue.",
   log:["Timed hourly entry 06:00–15:00, 30-minute grace period, then refused. 3 circuits / 10 sub-routes chosen at purchase — no roaming between them.","Daily cap 4,500 (5,600 on high-season dates; <b>1 January is one</b>). Tickets non-refundable. Buy at tuboleto.cultura.pe.","<b>Bus Aguas Calientes ↔ citadel:</b> 25–30 min, USD 36 return for foreign adults, <b>under-5s free on a lap</b>.","<b>Take the first entry window</b> — January rain is mostly afternoon and overnight, mornings often clear around 09:00–10:00."]},
-cusco:{lead:1,n:"Cusco — the altitude problem",r:"Peru · 3,399 m",lat:-13.5169,lon:-71.9786,
+cusco:{lead:1, out:1,n:"Cusco — the altitude problem",r:"Peru · 3,399 m",lat:-13.5169,lon:-71.9786,
   f:"Iglesia_de_la_Compañía_de_Jesús,_Plaza_de_Armas,_Cusco,_Perú,_2015-07-31,_DD_74.jpg",
   hook:"3,399 m, reached by jet from sea level. This is the one place on the trip I would not sleep with a 10-month-old.",
   why:["It is a beautiful city and you will be sad to skip it. That is the trade.","<b>You do not have to sleep here to see Machu Picchu</b> — that is the whole point of the Sacred Valley routing."],
@@ -885,18 +881,17 @@ function IMGS(id){ return EXTRA[id] || [[P[id].f, P[id].n]]; }
 const V = {
  v1:{
   name:"A · The Grand Loop",
-  one:"Everything, in one clean circle. Peru up front while you are fresh, then a single anticlockwise loop south through Chile, over the Andes to Patagonia, and back via Buenos Aires with almost no backtracking.",
-  tag:"Most coverage · 13 stops",
-  pros:["Machu Picchu included","Valparaíso, Valdivia, Chiloé, the Lake District, Bariloche and Buenos Aires all in","The route never doubles back — every leg moves you forward","Peru done before Christmas, so the second half is one continuous overland-plus-short-hop loop"],
-  cons:["Busiest version — a move every 3–4 days outside the Temuco block","Buenos Aires falls in mid-January: hottest, most humid, and the month locals leave","Sacred Valley in December is still rainy season"],
+  one:"Everything that clears the altitude rule, in one clean circle. Peru\u2019s coast up front while you are fresh, then a single anticlockwise loop south through Chile, over the Andes to Patagonia, and home via Buenos Aires.",
+  tag:"Most coverage · 12 stops · Bariloche in",
+  pros:["The only version with <b>Bariloche and the Argentine Lake District</b>","Four nights in Lima and three in Paracas — Peru\u2019s coast done properly","The route never doubles back; every leg moves you forward","Valparaíso, Valdivia, Chiloé and the Lake District all included"],
+  cons:["Busiest of the three — a move every three days outside the Temuco block","<b>Buenos Aires falls in mid-January</b>: hottest, most humid, and the month locals leave","Seventeen nights in Temuco rather than eighteen"],
   legs:[
    {p:"santiago", a:"Dec 6", b:"Dec 9", n:3, note:"Land, sleep, see friends. Do not plan anything for day one."},
    {p:"valparaiso", a:"Dec 9", b:"Dec 11", n:2, in:"road", t:"Ruta 68 · 1h30 · Casablanca on the way"},
-   {p:"lima",     a:"Dec 11", b:"Dec 14", n:3, in:"fly", t:"SCL → LIM · 3h50"},
-   {p:"sacredvalley", a:"Dec 14", b:"Dec 17", n:3, in:"fly", t:"LIM → CUZ · 1h20 + 1h30 transfer down"},
-   {p:"paracas",  a:"Dec 17", b:"Dec 19", n:2, in:"fly", t:"CUZ → LIM · 1h20 + 4h drive south"},
-   {p:"santiago", a:"Dec 19", b:"Dec 20", n:1, in:"fly", t:"LIM → SCL · 3h50 · transit night"},
-   {p:"temuco",   a:"Dec 20", b:"Jan 5",  n:16, in:"fly", t:"SCL → ZCO · 1h26", star:"Christmas & New Year"},
+   {p:"lima",     a:"Dec 11", b:"Dec 15", n:4, in:"fly", t:"SCL → LIM · 3h50"},
+   {p:"paracas",  a:"Dec 15", b:"Dec 18", n:3, in:"road", t:"4h down the Panamericana Sur"},
+   {p:"santiago", a:"Dec 18", b:"Dec 19", n:1, in:"fly", t:"LIM → SCL · 3h50 · transit night"},
+   {p:"temuco",   a:"Dec 19", b:"Jan 5",  n:17, in:"fly", t:"SCL → ZCO · 1h26", star:"Christmas & New Year"},
    {p:"valdivia", a:"Jan 5",  b:"Jan 7",  n:2, in:"road", t:"Ruta 5 south · 169 km · 2h"},
    {p:"chiloe",   a:"Jan 7",  b:"Jan 10", n:3, in:"road", t:"~5h30 incl. the Pargua ferry"},
    {p:"puertovaras", a:"Jan 10", b:"Jan 13", n:3, in:"road", t:"Back north · ~3h + ferry"},
@@ -907,10 +902,10 @@ const V = {
  },
  v2:{
   name:"B · Right Season",
-  one:"Sequenced around the weather rather than the map. Buenos Aires in December when the city is alive and three degrees cooler; the Chilean south and Peru in January when both are at their best.",
-  tag:"Best conditions · 12 stops · longest family block",
-  pros:["<b>Buenos Aires in December</b> — restaurants open, locals in town, ~29°C instead of 33°C","18 nights in Temuco, the most family time of the three","Six nights in Buenos Aires rather than five","Lima in January is its sunniest, clearest month"],
-  cons:["<b>Machu Picchu in January</b> — the wettest month, 17–22 rain days","No Bariloche — the one real casualty","Peru at the end means a long block right before the flight home"],
+  one:"Sequenced around the weather rather than the map. Buenos Aires in December when the city is alive and three degrees cooler; the Chilean south and the Peruvian coast in January when both are at their best.",
+  tag:"Best conditions · 11 stops · 18 nights in Temuco",
+  pros:["<b>Buenos Aires in December</b> — restaurants open, locals in town, ~29°C instead of 33°C","<b>Six nights in Buenos Aires</b>, the longest of the three","<b>Eighteen nights in Temuco</b> — the most family time available","Lima in January is its sunniest, clearest month; Chiloé and the Lake District are at their peak"],
+  cons:["No Bariloche — the one real casualty","Peru sits at the end, so you fly home off the back of a four-hour hop rather than from a settled base","Valdivia and Chiloé land in the wetter half of January"],
   legs:[
    {p:"santiago", a:"Dec 6", b:"Dec 9", n:3},
    {p:"valparaiso", a:"Dec 9", b:"Dec 11", n:2, in:"road", t:"Ruta 68 · 1h30"},
@@ -919,31 +914,29 @@ const V = {
    {p:"temuco",   a:"Dec 18", b:"Jan 5",  n:18, in:"fly", t:"SCL → ZCO · 1h26", star:"Christmas & New Year"},
    {p:"valdivia", a:"Jan 5",  b:"Jan 7",  n:2, in:"road", t:"Ruta 5 south · 2h"},
    {p:"chiloe",   a:"Jan 7",  b:"Jan 11", n:4, in:"road", t:"~5h30 incl. ferry"},
-   {p:"puertovaras", a:"Jan 11", b:"Jan 14", n:3, in:"road", t:"~3h north"},
-   {p:"lima",     a:"Jan 14", b:"Jan 17", n:3, in:"fly", t:"PMC → SCL → LIM · one long travel day"},
-   {p:"sacredvalley", a:"Jan 17", b:"Jan 20", n:3, in:"fly", t:"LIM → CUZ · morning flight, straight down"},
-   {p:"paracas",  a:"Jan 20", b:"Jan 23", n:3, in:"fly", t:"CUZ → LIM + 4h drive south"},
-   {p:"santiago", a:"Jan 23", b:"Jan 26", n:3, in:"fly", t:"LIM → SCL · 3h50"}
+   {p:"puertovaras", a:"Jan 11", b:"Jan 15", n:4, in:"road", t:"~3h north"},
+   {p:"lima",     a:"Jan 15", b:"Jan 19", n:4, in:"fly", t:"PMC → SCL → LIM · one long travel day"},
+   {p:"paracas",  a:"Jan 19", b:"Jan 22", n:3, in:"road", t:"4h down the Panamericana Sur"},
+   {p:"santiago", a:"Jan 22", b:"Jan 26", n:4, in:"fly", t:"LIM → SCL · 3h50"}
   ]
  },
  v3:{
-  name:"C · Sea Level & Slow",
-  one:"The version where the altitude question never comes up. Peru stays on the coast, Machu Picchu waits for a future trip, and the nights you save go into longer stays everywhere else.",
-  tag:"No altitude · 12 stops · longest average stay",
-  pros:["<b>Nothing above 1,314 m</b> (Paso Samoré) — no paediatric conversation required","Chiloé gets four nights, Bariloche and Buenos Aires both make it","Four nights in Lima and three in Paracas — the coast done properly","Only twelve moves in 52 nights"],
-  cons:["<b>No Machu Picchu.</b> That is the whole trade.","Buenos Aires lands in late January — hot, humid, and half-empty","Sixteen nights in Temuco rather than eighteen"],
+  name:"C · The Slow Lane",
+  one:"The same places, unpacked. Eleven moves in fifty-two nights, five-night stays in Chiloé and the Lake District, and nothing that requires being anywhere by a particular hour. Patagonia is the price.",
+  tag:"Fewest moves · longest stays · calmest",
+  pros:["<b>Five nights each in Chiloé and Puerto Varas</b> — enough to have a bad-weather day and not care","Peru\u2019s coast at the start, so the long-haul recovery happens somewhere warm and flat","Only eleven moves, and four of them are short drives","Everything in December\u2019s half of the trip is done before the family arrives"],
+  cons:["No Bariloche and no Argentine Lake District","<b>Buenos Aires in late January</b> — hot, humid, half-empty","Seventeen nights in Temuco rather than eighteen","You will see fewer places than either alternative"],
   legs:[
    {p:"santiago", a:"Dec 6", b:"Dec 9", n:3},
    {p:"valparaiso", a:"Dec 9", b:"Dec 11", n:2, in:"road", t:"Ruta 68 · 1h30"},
    {p:"lima",     a:"Dec 11", b:"Dec 15", n:4, in:"fly", t:"SCL → LIM · 3h50"},
    {p:"paracas",  a:"Dec 15", b:"Dec 18", n:3, in:"road", t:"4h down the Panamericana Sur"},
    {p:"santiago", a:"Dec 18", b:"Dec 19", n:1, in:"fly", t:"LIM → SCL · transit night"},
-   {p:"temuco",   a:"Dec 19", b:"Jan 4",  n:16, in:"fly", t:"SCL → ZCO · 1h26", star:"Christmas & New Year"},
-   {p:"valdivia", a:"Jan 4",  b:"Jan 6",  n:2, in:"road", t:"Ruta 5 south · 2h"},
-   {p:"chiloe",   a:"Jan 6",  b:"Jan 10", n:4, in:"road", t:"~5h30 incl. ferry"},
-   {p:"puertovaras", a:"Jan 10", b:"Jan 13", n:3, in:"road", t:"~3h north"},
-   {p:"bariloche", a:"Jan 13", b:"Jan 17", n:4, in:"road", t:"Paso Samoré · 1,314 m · ~5h + border"},
-   {p:"buenosaires", a:"Jan 17", b:"Jan 22", n:5, in:"fly", t:"BRC → AEP · 2h25"},
+   {p:"temuco",   a:"Dec 19", b:"Jan 5",  n:17, in:"fly", t:"SCL → ZCO · 1h26", star:"Christmas & New Year"},
+   {p:"valdivia", a:"Jan 5",  b:"Jan 7",  n:2, in:"road", t:"Ruta 5 south · 2h"},
+   {p:"chiloe",   a:"Jan 7",  b:"Jan 12", n:5, in:"road", t:"~5h30 incl. ferry"},
+   {p:"puertovaras", a:"Jan 12", b:"Jan 17", n:5, in:"road", t:"~3h north"},
+   {p:"buenosaires", a:"Jan 17", b:"Jan 22", n:5, in:"fly", t:"PMC → SCL → EZE"},
    {p:"santiago", a:"Jan 22", b:"Jan 26", n:4, in:"fly", t:"EZE → SCL · 2h00"}
   ]
  }
@@ -993,9 +986,9 @@ function pinIcon(id,num,selected){
     </div>`
   });
 }
-function leadIcon(selected){
+function leadIcon(selected,out){
   return L.divIcon({className:'',iconSize:[15,15],iconAnchor:[7,7],
-    html:`<div class="leadwrap ${selected?'sel':''}"><div class="dot"></div></div>`});
+    html:`<div class="leadwrap ${selected?'sel':''} ${out?'outx':''}"><div class="dot"></div></div>`});
 }
 
 function draw(){
@@ -1034,7 +1027,7 @@ function draw(){
   if(showLeads){
     Object.keys(P).filter(k=>P[k].lead).forEach(k=>{
       const p=P[k];
-      L.marker([p.lat,p.lon],{icon:leadIcon(sel===k),zIndexOffset:100})
+      L.marker([p.lat,p.lon],{icon:leadIcon(sel===k,p.out),zIndexOffset:100})
         .addTo(leadLayer)
         .bindTooltip(p.n,{className:'tt',direction:'top',offset:[0,-8]})
         .on('click',()=>select(k));
@@ -1114,10 +1107,11 @@ function dossier(id){
 
   let stamps='';
   legs.forEach(l=>{ stamps+=`<span class="stamp s-date">${l.a} – ${l.b} · ${l.n} night${l.n>1?'s':''}</span>`; });
-  if(p.lead) stamps+=`<span class="stamp s-lead">Optional lead</span>`;
+  if(p.out) stamps+=`<span class="stamp s-out">✗ Ruled out — altitude</span>`;
+  else if(p.lead) stamps+=`<span class="stamp s-lead">Optional lead</span>`;
   if(p.alt!==undefined) stamps+=`<span class="stamp s-alt ${p.altHi?'hi':''}">${p.alt.toLocaleString()} m</span>`;
-  if(id==='cusco') stamps=`<span class="stamp s-alt hi">3,399 m · not recommended</span>`;
-  if(id==='machupicchu') stamps=`<span class="stamp s-lead">Optional lead</span><span class="stamp s-alt">2,430 m citadel</span>`;
+  if(id==='cusco') stamps=`<span class="stamp s-out">✗ Ruled out</span><span class="stamp s-alt hi">3,399 m</span>`;
+  if(id==='machupicchu') stamps=`<span class="stamp s-out">✗ Ruled out</span><span class="stamp s-alt hi">2,430 m citadel</span>`;
 
   const sec=(t,html)=> html?`<div class="sec"><h3>${t}</h3>${html}</div>`:'';
   const ul=a=> a&&a.length?`<ul>${a.map(x=>`<li>${x}</li>`).join('')}</ul>`:'';
@@ -1183,6 +1177,11 @@ function timeline(){
    ============================================================ */
 function compare(){
   const c=document.getElementById('compare');
+  const maxAlt=v=>{
+    let best=v.legs[0];
+    v.legs.forEach(l=>{ if((P[l.p].alt||0)>(P[best.p].alt||0)) best=l; });
+    return `${(P[best.p].alt||0).toLocaleString()} m — ${P[best.p].n}`;
+  };
   const row=(k)=>{
     const v=V[k];
     const stops=v.legs.length;
@@ -1194,15 +1193,15 @@ function compare(){
       <div class="one">${v.one}</div>
       <dl>
         <dt>Includes</dt><dd>
-          <span class="pill ${has('sacredvalley')?'y':'n'}">Machu Picchu ${has('sacredvalley')?'✓':'✗'}</span>
           <span class="pill ${has('bariloche')?'y':'n'}">Bariloche ${has('bariloche')?'✓':'✗'}</span>
           <span class="pill y">Valparaíso ✓</span>
           <span class="pill y">Valdivia ✓</span>
-          <span class="pill y">Buenos Aires ✓</span>
           <span class="pill y">Chiloé ✓</span>
+          <span class="pill y">Lima + Paracas ✓</span>
+          <span class="pill y">Buenos Aires ✓</span>
         </dd>
         <dt>Shape</dt><dd>${stops} stops · ~${flights} flights · Temuco block ${v.legs.find(l=>l.star).n} nights</dd>
-        <dt>Highest sleeping altitude</dt><dd>${has('sacredvalley')?'<b style="color:#8f1d12">2,871 m — Sacred Valley</b>':'<b style="color:#28615d">800 m — Bariloche</b>'}</dd>
+        <dt>Highest sleeping altitude</dt><dd><b style="color:#28615d">${maxAlt(v)} — well inside the 2,000 m limit</b></dd>
         <dt>Buenos Aires falls in</dt><dd>${v.legs.find(l=>l.p==='buenosaires').a.startsWith('Dec')?'<b style="color:#28615d">December — the better month</b>':'January — hot, humid, locals gone'}</dd>
         <dt>Argues for itself because</dt><dd>${v.pros.map(x=>'· '+x).join('<br>')}</dd>
         <dt>Costs you</dt><dd>${v.cons.map(x=>'· '+x).join('<br>')}</dd>
@@ -1211,14 +1210,14 @@ function compare(){
   };
   c.innerHTML=`
     <h1>Three ways to spend 52 nights</h1>
-    <p class="lede">Berlin out 5 December 2026, back 27 January 2027. Christmas and New Year in Temuco is fixed in all three; everything else is negotiable. The real fork is the second question below.</p>
+    <p class="lede">Berlin out 5 December 2026, back 27 January 2027. Christmas and New Year in Temuco is fixed in all three, and so is the altitude rule: <b>nothing sleeps above 2,000 m</b>. What is left to decide is whether you want Patagonia, the best possible Buenos Aires, or the calmest possible trip — you can have any two.</p>
     <div class="cgrid">${['v1','v2','v3'].map(row).join('')}</div>
 
     <div class="notes">
       <h3>The two decisions that actually change the map</h3>
       <ul>
-        <li><b>1. Machu Picchu with a 10-month-old.</b> You can avoid <i>sleeping</i> in Cusco — fly Lima→Cusco and transfer straight down to Urubamba (2,871 m) or Ollantaytambo (2,792 m), then train to Aguas Calientes at 2,040 m and the citadel at 2,430 m. But two things do not go away: the road out of Cusco airport crosses <b>Chinchero at ~3,760 m</b>, higher than Cusco itself, for 30–40 minutes; and published paediatric guidance puts the sleeping ceiling for a child under one at <b>1,600–2,000 m</b>, which the Sacred Valley exceeds. Add that <b>AMS in a pre-verbal baby is effectively undiagnosable</b> — the symptoms are fussiness, poor feeding and bad sleep, i.e. teething and jet lag. This is a paediatrician conversation. <b>Versions A and B assume yes. Version C assumes no.</b></li>
-        <li><b>2. Buenos Aires in December or January.</b> December: ~29°C, city fully alive. January: 31°C+ with heavy humidity, and porteños leave for the coast — independent restaurants and shops close for two weeks to a month. <b>Only Version B puts BA in December</b>, and it is the single highest-value swap available.</li>
+        <li><b>1. The altitude question is settled — no highlands.</b> Cusco (3,399 m), the Sacred Valley (2,871 m) and Machu Picchu (2,430 m citadel, 2,040 m at Aguas Calientes) are all out. Published paediatric guidance puts the sleeping ceiling for a child under one at <b>1,600–2,000 m</b>, and the road down from Cusco airport crosses Chinchero at ~3,760 m regardless of where you sleep. The deciding factor is not the number: it is that <b>AMS in a pre-verbal baby is indistinguishable from teething and jet lag</b>, so you would be guessing for three days. <b>The highest thing left on the board is Paso Cardenal Samoré at 1,314 m</b>, paved, crossed in about twenty minutes. Machu Picchu keeps until they are four and can tell you they have a headache.</li>
+        <li><b>2. Buenos Aires in December or January — now the biggest remaining lever.</b> December: ~29°C, city fully alive. January: 31°C+ with heavy humidity, and porteños leave for the coast — independent restaurants and shops close for two weeks to a month. <b>Only Version B puts BA in December</b>, and it is the single highest-value swap available.</li>
         <li><b>Why Mendoza is off all three.</b> The vendimia runs late February to April — the <b>festival is the first week of March</b>. In December and January you get green canopy, 33°C rising to 38–40°C, and no harvest activity at all. Add that several Mendoza wineries do not admit under-12s, and it is three nights for a diminished version of the thing. It stays on the board as an optional lead if you change your mind; Valparaíso and Valdivia took its nights.</li>
         <li><b>Do not drive the Cristo Redentor pass to Mendoza.</b> The tunnel is 3,175 m and the Argentine border post sits at ~3,200 m, which is where you queue — potentially 1–2 hours stationary. Santiago→Mendoza is a <b>65-minute flight</b> for roughly the price of the bus.</li>
         <li><b>Paso Cardenal Samoré is the easy crossing.</b> Paved both sides, only 1,314 m, open year-round. But a <b>Chilean rental car needs a notarised permiso requested 5–10 working days ahead</b> (USD 90–290, often SUV-only) and <b>must return to Chile</b> — one-way drop-offs across the border do not exist. For a one-way into Argentina, take the direct bus and rent locally.</li>
